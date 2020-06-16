@@ -8,9 +8,7 @@ setup(
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=True,
     zip_safe=True,
-    install_requires=[
-        "typing_extensions",
-    ],
+    install_requires=["typing_extensions", "pylibmc"],
     extras_require={
         "tests": ["pytest~=5.3.1",],
         "dev": ["wheel~=0.33.6", "black~=19.10b0", "mypy~=0.750", "bpython~=0.18",],

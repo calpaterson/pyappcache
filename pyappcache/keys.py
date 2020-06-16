@@ -3,7 +3,8 @@ from typing_extensions import Protocol
 
 
 class Key(Protocol):
-    def as_bytes(self) -> List[bytes]: ...
+    def as_bytes(self) -> List[bytes]:
+        ...
 
 
 class SimpleKey:
