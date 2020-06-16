@@ -16,5 +16,9 @@ def test_get_and_set(cache):
     key = SimpleKey(random_string())
     cache.set(key, 1)
     assert cache.get(key) == 1
-
     # TODO: Check TTL
+
+
+def test_get_and_set_absent(cache):
+    key = SimpleKey(random_string())
+    assert cache.get(key) is None
