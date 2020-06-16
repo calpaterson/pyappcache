@@ -29,15 +29,29 @@ class MemcacheCache:
     def get(self, key: Key) -> Optional[Any]:
         cache_contents = self._mc.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
-            return pickle.loads(cache_contents)
+            try:
+                value = pickle.loads(cache_contents)
+            except pickle.UnpicklingError:
+                value = None
+            return value
         else:
             return None
 
-    def set(self, key: Key, value: Any, ttl: timedelta = timedelta(0)) -> None:
-        self._mc.set(b"".join(key.as_bytes()), pickle.dumps(value))
+    def set(self, key: Key, value: Any, ttl_seconds: int = 0) -> None:
+        self.set_raw(
+            b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds
+        )
+
+    def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
+        self._mc.set(key_bytes, value_bytes, time=ttl)
 
     def invalidate(self, key: Key) -> None:
-        ...
+        self._mc.delete(b"".join(key.as_bytes()))
 
     def clear(self) -> None:
-        ...
+        """Clear the cache.
+
+        Warning: memcache doesn't have a way to list keys so this clears
+        everything!"""
+        logger.warning("flushing memcache!")
+        self._mc.flush_all()
