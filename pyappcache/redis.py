@@ -2,14 +2,14 @@ from typing import Sequence, Mapping, Optional, Any
 import pickle
 from logging import getLogger
 
-import pylibmc
+import redis as redis_py
 
 from .keys import Key
 
 logger = getLogger(__name__)
 
 
-class MemcacheCache:
+class RedisCache:
     """An implementation of Cache for memcache."""
 
     def __init__(
@@ -18,20 +18,19 @@ class MemcacheCache:
         client_kwargs: Optional[Mapping] = None,
     ):
         if client_args is None:
-            client_args = [["127.0.0.1"]]
+            client_args = []
         if client_kwargs is None:
             client_kwargs = {}
 
-        self._mc = pylibmc.Client(*client_args, **client_kwargs)
-        logger.debug("connected to %s", client_args[0])
+        self._redis = redis_py.Redis(*client_args, **client_kwargs)
+        logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
 
     def get(self, key: Key) -> Optional[Any]:
-        cache_contents = self._mc.get(b"".join(key.as_bytes()))
+        cache_contents = self._redis.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             try:
                 value = pickle.loads(cache_contents)
             except pickle.UnpicklingError:
-                logger.warning("unable to unpickle value for %s", key)
                 value = None
             return value
         else:
@@ -41,15 +40,10 @@ class MemcacheCache:
         self.set_raw(b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds)
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
-        self._mc.set(key_bytes, value_bytes, time=ttl)
+        self._redis.set(key_bytes, value_bytes, ex=ttl if ttl != 0 else None)
 
     def invalidate(self, key: Key) -> None:
-        self._mc.delete(b"".join(key.as_bytes()))
+        self._redis.delete(b"".join(key.as_bytes()))
 
     def clear(self) -> None:
-        """Clear the cache.
-
-        Warning: memcache doesn't have a way to list keys so this clears
-        everything!"""
-        logger.warning("flushing memcache!")
-        self._mc.flush_all()
+        self._redis.flushdb()

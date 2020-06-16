@@ -2,6 +2,7 @@ from datetime import timedelta
 import time
 
 from pyappcache.memcache import MemcacheCache
+from pyappcache.redis import RedisCache
 from pyappcache.keys import SimpleKey
 
 import pytest
@@ -9,10 +10,13 @@ import pytest
 from .utils import random_string
 
 
-@pytest.fixture(scope="session")
-def cache():
+@pytest.fixture(scope="session", params=["redis", "memcache"])
+def cache(request):
     """Cache object"""
-    return MemcacheCache()
+    if request.param == "redis":
+        return RedisCache()
+    else:
+        return MemcacheCache()
 
 
 def test_get_and_set_no_ttl(cache):
@@ -23,12 +27,16 @@ def test_get_and_set_no_ttl(cache):
 
 def test_get_and_set_1_sec_ttl(cache):
     key = SimpleKey(random_string())
-    cache.set(key, 1, ttl_seconds=1)
-    assert cache.get(key) == 1
-
-    # for memcache, no easy way to check ttl
-    time.sleep(1)
-    assert cache.get(key) is None
+    if isinstance(cache, MemcacheCache):
+        # FIXME: Check out of band, via stats
+        cache.set(key, 1, ttl_seconds=1)
+        assert cache.get(key) == 1
+        time.sleep(1)
+        assert cache.get(key) is None
+    else:
+        cache.set(key, 1, ttl_seconds=10_000)
+        assert cache.get(key) == 1
+        assert cache._redis.ttl(b"".join(key.as_bytes())) > 9_000
 
 
 def test_get_and_set_absent(cache):
