@@ -5,11 +5,12 @@ from logging import getLogger
 import pylibmc
 
 from .keys import Key
+from .cache import Cache, S_inv
 
 logger = getLogger(__name__)
 
 
-class MemcacheCache:
+class MemcacheCache(Cache):
     """An implementation of Cache for memcache."""
 
     def __init__(
@@ -25,7 +26,7 @@ class MemcacheCache:
         self._mc = pylibmc.Client(*client_args, **client_kwargs)
         logger.debug("connected to %s", client_args[0])
 
-    def get(self, key: Key) -> Optional[Any]:
+    def get(self, key: Key[S_inv]) -> Optional[S_inv]:
         cache_contents = self._mc.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             try:
@@ -37,13 +38,13 @@ class MemcacheCache:
         else:
             return None
 
-    def set(self, key: Key, value: Any, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[S_inv], value: S_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds)
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         self._mc.set(key_bytes, value_bytes, time=ttl)
 
-    def invalidate(self, key: Key) -> None:
+    def invalidate(self, key: Key[S_inv]) -> None:
         self._mc.delete(b"".join(key.as_bytes()))
 
     def clear(self) -> None:

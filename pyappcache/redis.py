@@ -1,15 +1,16 @@
-from typing import Sequence, Mapping, Optional, Any
+from typing import Sequence, Mapping, Optional
 import pickle
 from logging import getLogger
 
 import redis as redis_py
 
 from .keys import Key
+from .cache import Cache, S_inv
 
 logger = getLogger(__name__)
 
 
-class RedisCache:
+class RedisCache(Cache):
     """An implementation of Cache for memcache."""
 
     def __init__(
@@ -25,7 +26,7 @@ class RedisCache:
         self._redis = redis_py.Redis(*client_args, **client_kwargs)
         logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
 
-    def get(self, key: Key) -> Optional[Any]:
+    def get(self, key: Key[S_inv]) -> Optional[S_inv]:
         cache_contents = self._redis.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             try:
@@ -36,7 +37,7 @@ class RedisCache:
         else:
             return None
 
-    def set(self, key: Key, value: Any, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[S_inv], value: S_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds)
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:

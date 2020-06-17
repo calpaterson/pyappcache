@@ -3,7 +3,7 @@ import time
 
 from pyappcache.memcache import MemcacheCache
 from pyappcache.redis import RedisCache
-from pyappcache.keys import SimpleKey
+from pyappcache.keys import SimpleKey, Key
 
 import pytest
 
@@ -20,13 +20,13 @@ def cache(request):
 
 
 def test_get_and_set_no_ttl(cache):
-    key = SimpleKey(random_string())
+    key: Key[int] = SimpleKey(random_string())
     cache.set(key, 1)
     assert cache.get(key) == 1
 
 
 def test_get_and_set_1_sec_ttl(cache):
-    key = SimpleKey(random_string())
+    key: Key = SimpleKey(random_string())
     if isinstance(cache, MemcacheCache):
         # FIXME: Check out of band, via stats
         cache.set(key, 1, ttl_seconds=1)
@@ -40,26 +40,26 @@ def test_get_and_set_1_sec_ttl(cache):
 
 
 def test_get_and_set_absent(cache):
-    key = SimpleKey(random_string())
+    key: Key[None] = SimpleKey(random_string())
     assert cache.get(key) is None
 
 
 def test_invalidate(cache):
-    key = SimpleKey(random_string())
+    key: Key[int] = SimpleKey(random_string())
     cache.set(key, 1)
     cache.invalidate(key)
     assert cache.get(key) is None
 
 
 def test_clear(cache):
-    key = SimpleKey(random_string())
+    key: Key[int] = SimpleKey(random_string())
     cache.set(key, 1)
     cache.clear()
     assert cache.get(key) is None
 
 
 def test_unreadable_pickle(cache):
-    key = SimpleKey(random_string())
+    key: Key[int] = SimpleKey(random_string())
     key_bytes = b"".join(key.as_bytes())
     cache.set_raw(key_bytes, b"good luck unpickling this", 0)
 
