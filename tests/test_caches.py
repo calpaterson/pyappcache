@@ -1,6 +1,4 @@
-from typing import Optional, Type
-from datetime import timedelta
-import time
+from typing import Type
 
 from pyappcache.memcache import MemcacheCache
 from pyappcache.redis import RedisCache
@@ -9,7 +7,7 @@ from pyappcache.cache import Cache
 
 import pytest
 
-from .utils import random_string
+from .utils import random_string, get_memcache_ttl
 
 
 StringToIntKey: Type[Key[str, int]] = SimpleKey
@@ -33,17 +31,15 @@ def test_get_and_set_no_ttl(cache: Cache):
 
 
 def test_get_and_set_1_sec_ttl(cache):
-    key: Key = StringToIntKey(random_string())
+    key = StringToIntKey(random_string())
+    cache.set(key, 1, ttl_seconds=10_000)
     if isinstance(cache, MemcacheCache):
-        # FIXME: Check out of band, via stats
-        cache.set(key, 1, ttl_seconds=1)
-        assert cache.get(key) == 1
-        time.sleep(1)
-        assert cache.get(key) is None
+        ttl = get_memcache_ttl(b"".join(key.as_bytes()))
     else:
-        cache.set(key, 1, ttl_seconds=10_000)
-        assert cache.get(key) == 1
-        assert cache._redis.ttl(b"".join(key.as_bytes())) > 9_000
+        ttl = cache._redis.ttl(b"".join(key.as_bytes()))
+    assert cache.get(key) == 1
+    assert ttl is not None
+    assert ttl > 9_000
 
 
 def test_get_and_set_absent(cache):
