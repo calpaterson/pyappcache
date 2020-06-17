@@ -1,22 +1,23 @@
 from abc import ABCMeta, abstractmethod
 from typing import Optional, TypeVar
 
-from .keys import Key
+from .keys import Key, K, V
 
-S_inv = TypeVar("S_inv")
+K_inv = TypeVar("K_inv")
+V_inv = TypeVar("V_inv")
 
 
 class Cache(metaclass=ABCMeta):
     @abstractmethod
-    def get(self, key: Key[S_inv]) -> Optional[S_inv]:
+    def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:
         pass
 
     @abstractmethod
-    def set(self, key: Key[S_inv], value: S_inv, ttl_seconds: int) -> None:
+    def set(self, key: Key[K_inv, V_inv], value: K_inv, ttl_seconds: int = 0) -> None:
         pass
 
     @abstractmethod
-    def invalidate(self, key: Key[S_inv]) -> None:
+    def invalidate(self, key: Key[K_inv, V_inv]) -> None:
         pass
 
     @abstractmethod

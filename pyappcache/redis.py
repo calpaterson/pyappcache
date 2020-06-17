@@ -5,7 +5,7 @@ from logging import getLogger
 import redis as redis_py
 
 from .keys import Key
-from .cache import Cache, S_inv
+from .cache import Cache, K_inv, V_inv
 
 logger = getLogger(__name__)
 
@@ -26,7 +26,7 @@ class RedisCache(Cache):
         self._redis = redis_py.Redis(*client_args, **client_kwargs)
         logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
 
-    def get(self, key: Key[S_inv]) -> Optional[S_inv]:
+    def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:
         cache_contents = self._redis.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             try:
@@ -37,7 +37,7 @@ class RedisCache(Cache):
         else:
             return None
 
-    def set(self, key: Key[S_inv], value: S_inv, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds)
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:

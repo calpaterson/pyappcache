@@ -1,18 +1,19 @@
 from typing import List, TypeVar, Sequence
 from typing_extensions import Protocol
 
-S = TypeVar("S", covariant=True)
+K = TypeVar("K", covariant=True)
+V = TypeVar("V", covariant=True)
 
 
-class Key(Protocol[S]):
-    def __init__(self, key_subject: S) -> None:
+class Key(Protocol[K, V]):
+    def __init__(self, key_subject: K) -> None:
         ...
 
     def as_bytes(self) -> Sequence[bytes]:
         ...
 
 
-class SimpleKey(Key[S]):
+class SimpleKey(Key[str, V]):
     def __init__(self, key_str: str):
         self.key_str = key_str
 
