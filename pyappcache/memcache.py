@@ -1,4 +1,4 @@
-from typing import Sequence, Mapping, Optional, Any
+from typing import Sequence, Mapping, Optional
 import pickle
 from logging import getLogger
 

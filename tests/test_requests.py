@@ -1,4 +1,3 @@
-from os import environ
 import threading
 from contextlib import closing
 import socket
@@ -11,7 +10,7 @@ import requests.models
 import requests.adapters
 import pytest
 
-from pyappcache.requests import CacheControlProxy
+from pyappcache.util.requests import CacheControlProxy
 
 
 def get_free_port():

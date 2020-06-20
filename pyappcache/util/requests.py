@@ -1,6 +1,7 @@
 from typing import Type, Optional
-from .cache import Cache
-from .keys import SimpleKey, Key
+
+from ..cache import Cache
+from ..keys import SimpleKey, Key
 
 CacheControlKey: Type[Key[str, bytes]] = SimpleKey
 

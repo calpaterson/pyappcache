@@ -1,4 +1,4 @@
-from typing import List, TypeVar, Sequence
+from typing import TypeVar, Sequence
 from typing_extensions import Protocol
 
 K = TypeVar("K", covariant=True)

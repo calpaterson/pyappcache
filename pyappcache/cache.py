@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Optional, TypeVar
 
-from .keys import Key, K, V
+from .keys import Key
 
 K_inv = TypeVar("K_inv")
 V_inv = TypeVar("V_inv")
