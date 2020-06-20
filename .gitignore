@@ -4,3 +4,5 @@ pyappcache.egg-info
 build
 dist
 .tox
+.coverage
+htmlcov

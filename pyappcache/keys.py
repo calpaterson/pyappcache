@@ -7,10 +7,10 @@ V = TypeVar("V", covariant=True)
 
 class Key(Protocol[K, V]):
     def __init__(self, key_subject: K) -> None:
-        ...
+        pass  # pragma: no cover
 
     def as_bytes(self) -> Sequence[bytes]:
-        ...
+        pass  # pragma: no cover
 
 
 class SimpleKey(Key[str, V]):

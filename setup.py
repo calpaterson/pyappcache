@@ -10,7 +10,13 @@ setup(
     zip_safe=True,
     install_requires=["typing_extensions", "pylibmc", "redis>=3"],
     extras_require={
-        "tests": ["pytest~=5.3.1",],
+        "tests": [
+            "pytest~=5.3.1",
+            "requests",
+            "cachecontrol",
+            "flask~=1.1.2",
+            "pytest-cov~=2.10.0",
+        ],
         "dev": ["wheel~=0.33.6", "black~=19.10b0", "mypy~=0.750", "bpython~=0.18",],
     },
 )

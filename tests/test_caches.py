@@ -13,15 +13,6 @@ from .utils import random_string, get_memcache_ttl
 StringToIntKey: Type[Key[str, int]] = SimpleKey
 
 
-@pytest.fixture(scope="session", params=["redis", "memcache"])
-def cache(request):
-    """Cache object"""
-    if request.param == "redis":
-        return RedisCache()
-    else:
-        return MemcacheCache()
-
-
 def test_get_and_set_no_ttl(cache: Cache):
     v = 1
     key = StringToIntKey(random_string())
