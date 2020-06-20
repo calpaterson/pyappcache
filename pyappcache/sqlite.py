@@ -59,6 +59,8 @@ CLEAR_DML = """
 DELETE FROM pyappcache;
 """
 
+# This is present as a basic safety feature - to prevent people blowing up
+# their processes by accident
 MAX_SIZE = 10_000
 
 
