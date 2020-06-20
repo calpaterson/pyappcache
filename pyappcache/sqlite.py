@@ -14,12 +14,21 @@ CREATE TABLE pyappcache
 (key PRIMARY KEY, value NOT NULL, expiry NOT NULL, last_read NOT NULL);
 """
 
-
 SET_DML = """
 INSERT INTO pyappcache
 (key, value, expiry, last_read)
 VALUES
 (?, ?, ?, ?);
+"""
+
+EVICT_DML = """
+DELETE FROM pyappcache
+WHERE key IN (
+SELECT key
+FROM pyappcache
+ORDER BY last_read DESC
+LIMIT -1 OFFSET ?
+);
 """
 
 TOUCH_DML = """
@@ -50,12 +59,15 @@ CLEAR_DML = """
 DELETE FROM pyappcache;
 """
 
+MAX_SIZE = 10_000
+
 
 class SqliteCache(Cache):
     """An implementation of Cache for sqlite3"""
 
-    def __init__(self):
+    def __init__(self, max_size=MAX_SIZE):
         self.conn = sqlite3.connect(":memory:")
+        self.max_size = max_size
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(CREATE_DDL)
             self.conn.commit()
@@ -85,6 +97,7 @@ class SqliteCache(Cache):
         expiry = last_read + timedelta(seconds=ttl)
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(SET_DML, (key_bytes, value_bytes, expiry, last_read))
+            cursor.execute(EVICT_DML, (self.max_size,))
             self.conn.commit()
 
     def ttl(self, key_bytes) -> Optional[int]:
