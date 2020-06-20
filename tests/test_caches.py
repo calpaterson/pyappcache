@@ -1,6 +1,7 @@
 from typing import Type
 
 from pyappcache.memcache import MemcacheCache
+from pyappcache.sqlite import SqliteCache
 from pyappcache.keys import SimpleKey, Key
 from pyappcache.cache import Cache
 
@@ -18,13 +19,17 @@ def test_get_and_set_no_ttl(cache: Cache):
     assert got == v
 
 
-def test_get_and_set_1_sec_ttl(cache):
+def test_get_and_set_10k_sec_ttl(cache):
     key = StringToIntKey(random_string())
     cache.set(key, 1, ttl_seconds=10_000)
+
+    key_bytes = b"".join(key.as_bytes())
     if isinstance(cache, MemcacheCache):
-        ttl = get_memcache_ttl(b"".join(key.as_bytes()))
+        ttl = get_memcache_ttl(key_bytes)
+    elif isinstance(cache, SqliteCache):
+        ttl = cache.ttl(key_bytes)
     else:
-        ttl = cache._redis.ttl(b"".join(key.as_bytes()))
+        ttl = cache._redis.ttl(key_bytes)
     assert cache.get(key) == 1
     assert ttl is not None
     assert ttl > 9_000

@@ -8,7 +8,7 @@ setup(
     packages=find_packages(exclude=["tests.*", "tests"]),
     include_package_data=True,
     zip_safe=True,
-    install_requires=["typing_extensions", "pylibmc", "redis>=3"],
+    install_requires=["typing_extensions", "pylibmc", "redis>=3", "python-dateutil"],
     extras_require={
         "tests": [
             "pytest~=5.3.1",

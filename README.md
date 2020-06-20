@@ -3,7 +3,7 @@
 Pyappcache is a library to make it easier to use application-level caching in Python.
 
 - Allows putting arbitrary Python objects into the cache
-- Supports both Memcache and Redis
+- Supports Memcache, Redis and SQLite
 - Provides a few handy extras
   - A plugin for the [cachecontrol](https://pypi.org/project/CacheControl/) library so you can also use it as an HTTP cache with [requests](https://pypi.org/project/requests/)
 
