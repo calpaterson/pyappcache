@@ -35,6 +35,13 @@ def test_get_and_set_10k_sec_ttl(cache):
     assert ttl > 9_000
 
 
+def test_overwrite(cache):
+    key = StringToIntKey(random_string())
+    cache.set(key, 1)
+    cache.set(key, 2)
+    assert cache.get(key) == 2
+
+
 def test_get_and_set_absent(cache):
     key = StringToIntKey(random_string())
     assert cache.get(key) is None

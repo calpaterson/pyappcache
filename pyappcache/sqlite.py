@@ -15,7 +15,7 @@ CREATE TABLE pyappcache
 """
 
 SET_DML = """
-INSERT INTO pyappcache
+INSERT OR REPLACE INTO pyappcache
 (key, value, expiry, last_read)
 VALUES
 (?, ?, ?, ?);
