@@ -10,9 +10,20 @@ from .keys import Key
 from .cache import Cache, K_inv, V_inv
 
 CREATE_DDL = """
-CREATE TABLE pyappcache
+CREATE TABLE IF NOT EXISTS pyappcache
 (key PRIMARY KEY, value NOT NULL, expiry NOT NULL, last_read NOT NULL);
 """
+
+INDEX_DDL = [
+    """
+    CREATE INDEX IF NOT EXISTS pyappcache_expiry
+    ON pyappcache (expiry);
+    """,
+    """
+    CREATE INDEX IF NOT EXISTS pyappcache_last_read
+    ON pyappcache (last_read);
+    """
+]
 
 SET_DML = """
 INSERT OR REPLACE INTO pyappcache
@@ -64,14 +75,29 @@ DELETE FROM pyappcache;
 MAX_SIZE = 10_000
 
 
+_in_memory_conn = None
+
+def get_in_memory_conn():
+    """Get a shared in-memory connection"""
+    global _in_memory_conn
+    if _in_memory_conn is None:
+        _in_memory_conn = sqlite3.connect(":memory:")
+    return _in_memory_conn
+
+
 class SqliteCache(Cache):
     """An implementation of Cache for sqlite3"""
 
-    def __init__(self, max_size=MAX_SIZE):
-        self.conn = sqlite3.connect(":memory:")
+    def __init__(self, max_size=MAX_SIZE, connection_string=None):
+        if connection_string is None:
+            self.conn = get_in_memory_conn()
+        else:
+            self.conn = sqlite3.connect(connection_string)
         self.max_size = max_size
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(CREATE_DDL)
+            for index_ddl in INDEX_DDL:
+                cursor.execute(index_ddl)
             self.conn.commit()
 
     def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:

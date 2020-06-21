@@ -15,3 +15,10 @@ def test_sqlite3_lru():
         cache.set(StringToStringKey(str(i)), "something")
 
     assert cache.get(StringToStringKey("0")) is None
+
+
+@pytest.mark.xfail(reason="test not implemented")
+def test_sqlite_lru_with_backing_file(tmpdir):
+    """Test that it works with a backing file (as opposed to the default, in
+    memory option)"""
+    assert False
