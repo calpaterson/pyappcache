@@ -22,7 +22,7 @@ INDEX_DDL = [
     """
     CREATE INDEX IF NOT EXISTS pyappcache_last_read
     ON pyappcache (last_read);
-    """
+    """,
 ]
 
 SET_DML = """
@@ -77,6 +77,7 @@ MAX_SIZE = 10_000
 
 _in_memory_conn = None
 
+
 def get_in_memory_conn():
     """Get a shared in-memory connection"""
     global _in_memory_conn
@@ -116,7 +117,9 @@ class SqliteCache(Cache):
             return None
 
     def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds)
+        self.set_raw(
+            b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
+        )
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()
