@@ -2,10 +2,10 @@ from typing import Optional
 from datetime import datetime, timedelta
 from contextlib import closing
 import sqlite3
-import pickle
 
 from dateutil.parser import parse as parse_dt
 
+from .serialisation import PickleSerialiser
 from .keys import Key
 from .cache import Cache, K_inv, V_inv
 
@@ -89,6 +89,7 @@ class SqliteCache(Cache):
     """An implementation of Cache for sqlite3"""
 
     def __init__(self, max_size=MAX_SIZE, connection_string=None):
+        self.serialiser = PickleSerialiser()
         if connection_string is None:
             self.conn = get_in_memory_conn()
         else:
@@ -110,15 +111,12 @@ class SqliteCache(Cache):
             self.conn.commit()
         if rv is not None:
             (cache_contents,) = rv
-            try:
-                return pickle.loads(cache_contents)
-            except pickle.UnpicklingError:
-                return None
+            return self.serialiser.loads(cache_contents)
         else:
             return None
 
     def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(b"".join(key.as_bytes()), pickle.dumps(value), ttl_seconds)
+        self.set_raw(b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds)
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()
