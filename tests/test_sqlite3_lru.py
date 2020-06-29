@@ -3,6 +3,9 @@ from typing import Type
 from pyappcache.sqlite import SqliteCache
 from pyappcache.keys import SimpleKey, Key
 
+import pytest
+
+
 StringToStringKey: Type[Key[str, str]] = SimpleKey
 
 
