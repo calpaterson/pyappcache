@@ -20,7 +20,7 @@ setup(
         ],
         "dev": [
             "wheel~=0.33.6",
-            'black~=19.10b0; python_version > "3.5"',
+            'black~=19.10b0',
             "mypy~=0.750",
             "bpython~=0.18",
         ],
