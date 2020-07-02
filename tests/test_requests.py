@@ -47,6 +47,7 @@ def local_server():
 
     # FIXME: Remove this hack - only want to give flask enough time to start up
     import time
+
     time.sleep(1)
 
     return app, port
