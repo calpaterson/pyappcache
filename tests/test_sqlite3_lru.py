@@ -22,7 +22,7 @@ def test_sqlite_lru_with_backing_file(tmp_path):
     memory option)"""
     path = tmp_path / "cache.sqlite3"
 
-    cache = SqliteCache(max_size=5, connection_string=path)
+    cache = SqliteCache(max_size=5, connection_string=str(path))
 
     cache.set(StringToStringKey("a"), "b")
 
