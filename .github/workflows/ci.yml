@@ -17,8 +17,7 @@ jobs:
         - 6379:6379
         options: --entrypoint redis-server
 
-    services:
-      redis:
+      memcached:
         image: memcached
         ports:
         - 11211:11211
