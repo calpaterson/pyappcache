@@ -20,5 +20,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions==1.3.0
+        apt install memcached redis-server
     - name: Test with tox
       run: tox
