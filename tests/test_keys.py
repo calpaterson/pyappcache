@@ -1,7 +1,4 @@
-from typing import Type
-from pyappcache.keys import SimpleKey, Key
-
-StringToIntKey: Type[Key[str, int]] = SimpleKey
+from .utils import StringToIntKey
 
 
 def test_simple_key_to_bytes():

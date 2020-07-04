@@ -1,9 +1,5 @@
-from typing import Type
-
 from pyappcache.sqlite import SqliteCache
-from pyappcache.keys import SimpleKey, Key
-
-StringToStringKey: Type[Key[str, str]] = SimpleKey
+from .utils import StringToStringKey
 
 
 def test_sqlite3_lru():

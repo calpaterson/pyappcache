@@ -4,8 +4,12 @@ import random
 import string
 import socket
 from datetime import datetime, timedelta
-
 from logging import getLogger
+
+from pyappcache.keys import StringToGenericKey
+
+StringToIntKey = StringToGenericKey[int]
+StringToStringKey = StringToGenericKey[str]
 
 logger = getLogger(__name__)
 

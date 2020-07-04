@@ -1,14 +1,8 @@
-from typing import Type
-
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite import SqliteCache
-from pyappcache.keys import SimpleKey, Key
 from pyappcache.cache import Cache
 
-from .utils import random_string, get_memcache_ttl
-
-
-StringToIntKey: Type[Key[str, int]] = SimpleKey
+from .utils import random_string, get_memcache_ttl, StringToIntKey
 
 
 def test_get_and_set_no_ttl(cache: Cache):

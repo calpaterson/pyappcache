@@ -4,7 +4,7 @@ from logging import getLogger
 import redis as redis_py
 
 from .keys import Key
-from .cache import Cache, K_inv, V_inv
+from .cache import Cache, V_inv
 from .serialisation import PickleSerialiser
 
 logger = getLogger(__name__)
@@ -27,14 +27,14 @@ class RedisCache(Cache):
         self._redis = redis_py.Redis(*client_args, **client_kwargs)
         logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
 
-    def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:
+    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         cache_contents = self._redis.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             return self.serialiser.loads(cache_contents)
         else:
             return None
 
-    def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
             b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
         )

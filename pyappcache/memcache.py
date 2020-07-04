@@ -4,7 +4,7 @@ from logging import getLogger
 import pylibmc
 
 from .keys import Key
-from .cache import Cache, K_inv, V_inv
+from .cache import Cache, V_inv
 from .serialisation import PickleSerialiser
 
 logger = getLogger(__name__)
@@ -27,14 +27,14 @@ class MemcacheCache(Cache):
         self.serialiser = PickleSerialiser()
         logger.debug("connected to %s", client_args[0])
 
-    def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:
+    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         cache_contents = self._mc.get(b"".join(key.as_bytes()))
         if cache_contents is not None:
             return self.serialiser.loads(cache_contents)
         else:
             return None
 
-    def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
             b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
         )
@@ -42,7 +42,7 @@ class MemcacheCache(Cache):
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         self._mc.set(key_bytes, value_bytes, time=ttl)
 
-    def invalidate(self, key: Key[K_inv, V_inv]) -> None:
+    def invalidate(self, key: Key[V_inv]) -> None:
         self._mc.delete(b"".join(key.as_bytes()))
 
     def clear(self) -> None:

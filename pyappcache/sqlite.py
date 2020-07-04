@@ -7,7 +7,7 @@ from dateutil.parser import parse as parse_dt
 
 from .serialisation import PickleSerialiser
 from .keys import Key
-from .cache import Cache, K_inv, V_inv
+from .cache import Cache, V_inv
 
 CREATE_DDL = """
 CREATE TABLE IF NOT EXISTS pyappcache
@@ -102,7 +102,7 @@ class SqliteCache(Cache):
                 cursor.execute(index_ddl)
             self.conn.commit()
 
-    def get(self, key: Key[K_inv, V_inv]) -> Optional[V_inv]:
+    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         now = datetime.utcnow()
         key_bytes = b"".join(key.as_bytes())
         with closing(self.conn.cursor()) as cursor:
@@ -116,7 +116,7 @@ class SqliteCache(Cache):
         else:
             return None
 
-    def set(self, key: Key[K_inv, V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
             b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
         )
@@ -138,7 +138,7 @@ class SqliteCache(Cache):
         ttl_td = expiry_dt - now
         return int(ttl_td.total_seconds())
 
-    def invalidate(self, key: Key[K_inv, V_inv]) -> None:
+    def invalidate(self, key: Key[V_inv]) -> None:
         key_bytes = b"".join(key.as_bytes())
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(INVALIDATE_DML, (key_bytes,))
