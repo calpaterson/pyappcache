@@ -44,6 +44,7 @@ def get_memcache_ttl(key: str) -> Optional[int]:
         # 1. Get a list of slabs
         sock.send(b"stats items\r\n")
         response = sock.recv(ONE_MEG)
+        logger.debug("memcached stats items response: \n%s", response)
         slabs = set(int(slab) for slab in SLAB_REGEX.findall(response))
 
         # 2. Check every slab for our item
@@ -51,6 +52,7 @@ def get_memcache_ttl(key: str) -> Optional[int]:
             command = bytes(f"stats cachedump {slab} 10\r\n", "utf-8")
             sock.send(command)
             response = sock.recv(ONE_MEG)
+            logger.debug("memcached stats cachedump response: \n%s", response)
             match_obj = ttl_regex.search(response)
             if match_obj:
                 ttl = int(match_obj.group(1))
