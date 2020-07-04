@@ -29,7 +29,7 @@ class RedisCache(Cache):
             build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
-    def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
+    def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
         self._redis.set(key_bytes, value_bytes, ex=ttl if ttl != 0 else None)
 
     def invalidate(self, key: Key) -> None:

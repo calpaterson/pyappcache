@@ -27,8 +27,8 @@ class MemcacheCache(Cache):
             build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
-    def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
-        self._mc.set(key_bytes, value_bytes, time=ttl)
+    def set_raw(self, key_str: str, value_bytes: bytes, ttl: int) -> None:
+        self._mc.set(key_str, value_bytes, time=ttl)
 
     def invalidate(self, key: Key[V_inv]) -> None:
         self._mc.delete(build_raw_key(self.prefix, key))

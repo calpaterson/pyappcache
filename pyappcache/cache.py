@@ -8,7 +8,7 @@ V_inv = TypeVar("V_inv")
 
 
 class Cache(metaclass=ABCMeta):
-    prefix: bytes = b"/pyappcache/"
+    prefix: str = "/pyappcache/"
 
     @abstractmethod
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:

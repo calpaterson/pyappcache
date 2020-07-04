@@ -27,12 +27,14 @@ ONE_MEG = 1024 * 1024 * 1024
 SLAB_REGEX = re.compile(br":(\d+):")
 
 
-def get_memcache_ttl(key: bytes) -> Optional[int]:
+def get_memcache_ttl(key: str) -> Optional[int]:
     """There is no way to get the ttl of a key from pylibmc so we do it out of
     band with a socket via the text API."""
     logger.info("looking up the ttl of: %s", key)
     timelimit = datetime.utcnow() + timedelta(seconds=1)
-    ttl_regex = re.compile(rb"ITEM %s \[[0-9]+ b; ([0-9]+) s]" % key, re.MULTILINE)
+    ttl_regex = re.compile(
+        rb"ITEM %s \[[0-9]+ b; ([0-9]+) s]" % bytes(key, "utf-8"), re.MULTILINE
+    )
 
     attempt = 1
     # Looks like something is causing the IO to happen async so try for a second

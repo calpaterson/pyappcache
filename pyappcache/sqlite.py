@@ -123,7 +123,7 @@ class SqliteCache(Cache):
             build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
-    def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
+    def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()
         expiry = last_read + timedelta(seconds=ttl)
         with closing(self.conn.cursor()) as cursor:
