@@ -13,10 +13,10 @@ Pyappcache is a library to make it easier to use application-level caching in Py
 from datetime import date
 
 from pyappcache.memcache import MemcacheCache
-from pyappcache.keys import SimpleKey
+from pyappcache.keys import GenericStringKey
 
 cache = MemcacheCache()
-key = SimpleKey("mifid start date")
+key = GenericStringKey("mifid start date")
 cache.set(key, date(2018, 1, 3), ttl=3600)
 
 ... # later...

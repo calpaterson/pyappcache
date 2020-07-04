@@ -8,4 +8,4 @@ def test_simple_key_to_bytes():
 
 def test_simple_key_repr():
     key = StringToIntKey("freddie")
-    assert repr(key) == "<SimpleKey 'freddie'>"
+    assert repr(key) == "<GenericStringKey 'freddie'>"

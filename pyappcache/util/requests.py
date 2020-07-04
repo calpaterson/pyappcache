@@ -1,9 +1,9 @@
 from typing import Optional
 
 from ..cache import Cache
-from ..keys import StringToGenericKey
+from ..keys import GenericStringKey
 
-CacheControlKey = StringToGenericKey[bytes]
+CacheControlKey = GenericStringKey[bytes]
 
 
 class CacheControlProxy:

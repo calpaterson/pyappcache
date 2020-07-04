@@ -9,12 +9,12 @@ class Key(Protocol[V]):
         pass  # pragma: no cover
 
 
-class StringToGenericKey(Key[V]):
+class GenericStringKey(Key[V]):
     def __init__(self, key_str: str):
         self.key_str = key_str
 
     def __repr__(self):
-        return f"<SimpleKey '{self.key_str}'>"
+        return f"<GenericStringKey '{self.key_str}'>"
 
     def as_bytes(self) -> Sequence[bytes]:
         return [bytes(self.key_str, "utf-8")]

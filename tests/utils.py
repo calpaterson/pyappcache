@@ -6,10 +6,10 @@ import socket
 from datetime import datetime, timedelta
 from logging import getLogger
 
-from pyappcache.keys import StringToGenericKey
+from pyappcache.keys import GenericStringKey
 
-StringToIntKey = StringToGenericKey[int]
-StringToStringKey = StringToGenericKey[str]
+StringToIntKey = GenericStringKey[int]
+StringToStringKey = GenericStringKey[str]
 
 logger = getLogger(__name__)
 
