@@ -3,7 +3,7 @@ from logging import getLogger
 
 import pylibmc
 
-from .keys import Key
+from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
 from .serialisation import PickleSerialiser
 
@@ -28,7 +28,7 @@ class MemcacheCache(Cache):
         logger.debug("connected to %s", client_args[0])
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
-        cache_contents = self._mc.get(b"".join(key.as_bytes()))
+        cache_contents = self._mc.get(build_raw_key(self.prefix, key))
         if cache_contents is not None:
             return self.serialiser.loads(cache_contents)
         else:
@@ -36,14 +36,14 @@ class MemcacheCache(Cache):
 
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
-            b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
+            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         self._mc.set(key_bytes, value_bytes, time=ttl)
 
     def invalidate(self, key: Key[V_inv]) -> None:
-        self._mc.delete(b"".join(key.as_bytes()))
+        self._mc.delete(build_raw_key(self.prefix, key))
 
     def clear(self) -> None:
         """Clear the cache.

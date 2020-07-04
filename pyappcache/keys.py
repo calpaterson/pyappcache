@@ -18,3 +18,10 @@ class GenericStringKey(Key[V]):
 
     def as_bytes(self) -> Sequence[bytes]:
         return [bytes(self.key_str, "utf-8")]
+
+
+def build_raw_key(prefix: bytes, key: Key) -> bytes:
+    key_segments = [prefix]
+    key_segments.extend(key.as_bytes())
+    key_bytes = b"".join(key_segments)
+    return key_bytes

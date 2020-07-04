@@ -6,7 +6,7 @@ import sqlite3
 from dateutil.parser import parse as parse_dt
 
 from .serialisation import PickleSerialiser
-from .keys import Key
+from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
 
 CREATE_DDL = """
@@ -104,7 +104,7 @@ class SqliteCache(Cache):
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         now = datetime.utcnow()
-        key_bytes = b"".join(key.as_bytes())
+        key_bytes = build_raw_key(self.prefix, key)
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, key_bytes, now))
             cursor.execute(GET_DQL, (key_bytes,))
@@ -118,7 +118,7 @@ class SqliteCache(Cache):
 
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
-            b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
+            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
@@ -139,7 +139,7 @@ class SqliteCache(Cache):
         return int(ttl_td.total_seconds())
 
     def invalidate(self, key: Key[V_inv]) -> None:
-        key_bytes = b"".join(key.as_bytes())
+        key_bytes = build_raw_key(self.prefix, key)
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(INVALIDATE_DML, (key_bytes,))
             self.conn.commit()

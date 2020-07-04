@@ -1,8 +1,9 @@
+from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite import SqliteCache
 from pyappcache.cache import Cache
 
-from .utils import random_string, get_memcache_ttl, StringToIntKey
+from .utils import random_string, get_memcache_ttl, StringToIntKey, random_bytes
 
 
 def test_get_and_set_no_ttl(cache: Cache):
@@ -17,7 +18,7 @@ def test_get_and_set_10k_sec_ttl(cache):
     key = StringToIntKey(random_string())
     cache.set(key, 1, ttl_seconds=10_000)
 
-    key_bytes = b"".join(key.as_bytes())
+    key_bytes = build_raw_key(cache.prefix, key)
     if isinstance(cache, MemcacheCache):
         ttl = get_memcache_ttl(key_bytes)
     elif isinstance(cache, SqliteCache):
@@ -57,7 +58,14 @@ def test_clear(cache):
 
 def test_unreadable_pickle(cache):
     key = StringToIntKey(random_string())
-    key_bytes = b"".join(key.as_bytes())
+    key_bytes = cache.prefix + b"".join(key.as_bytes())
     cache.set_raw(key_bytes, b"good luck unpickling this", 0)
 
+    assert cache.get(key) is None
+
+
+def test_prefixing(cache):
+    key = StringToIntKey(random_string())
+    cache.set(key, 0)
+    cache.prefix = random_bytes()
     assert cache.get(key) is None

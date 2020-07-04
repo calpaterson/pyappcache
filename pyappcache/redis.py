@@ -3,7 +3,7 @@ from logging import getLogger
 
 import redis as redis_py
 
-from .keys import Key
+from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
 from .serialisation import PickleSerialiser
 
@@ -28,7 +28,7 @@ class RedisCache(Cache):
         logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
-        cache_contents = self._redis.get(b"".join(key.as_bytes()))
+        cache_contents = self._redis.get(build_raw_key(self.prefix, key))
         if cache_contents is not None:
             return self.serialiser.loads(cache_contents)
         else:
@@ -36,14 +36,14 @@ class RedisCache(Cache):
 
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
-            b"".join(key.as_bytes()), self.serialiser.dumps(value), ttl_seconds
+            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
         )
 
     def set_raw(self, key_bytes: bytes, value_bytes: bytes, ttl: int) -> None:
         self._redis.set(key_bytes, value_bytes, ex=ttl if ttl != 0 else None)
 
     def invalidate(self, key: Key) -> None:
-        self._redis.delete(b"".join(key.as_bytes()))
+        self._redis.delete(build_raw_key(self.prefix, key))
 
     def clear(self) -> None:
         self._redis.flushdb()
