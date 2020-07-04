@@ -1,4 +1,4 @@
-from typing import TypeVar, Sequence
+from typing import TypeVar, Sequence, Union
 from typing_extensions import Protocol
 
 V = TypeVar("V", covariant=True)
@@ -20,8 +20,11 @@ class GenericStringKey(Key[V]):
         return [self.key_str]
 
 
-def build_raw_key(prefix: str, key: Key) -> str:
+def build_raw_key(prefix: str, key: Union[Key, str]) -> str:
     key_segments = [prefix]
-    key_segments.extend(key.as_segments())
+    if isinstance(key, str):
+        key_segments.append(key)
+    else:
+        key_segments.extend(key.as_segments())
     key_bytes = "".join(key_segments)
     return key_bytes

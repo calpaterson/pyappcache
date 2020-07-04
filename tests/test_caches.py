@@ -69,3 +69,21 @@ def test_prefixing(cache):
     cache.set(key, 0)
     cache.prefix = random_string()
     assert cache.get(key) is None
+
+
+def test_by_str(cache):
+    key_subj = random_string()
+    key = StringToIntKey(key_subj)
+    str_key = key_subj
+
+    cache.set(key, 0)
+    assert cache.get_by_str(str_key) == 0
+
+    cache.invalidate(str_key)
+    assert cache.get_by_str(key) is None
+
+    cache.set_by_str(str_key, 1)
+    assert cache.get(key) == 1
+
+    cache.invalidate_by_str(str_key)
+    assert cache.get(key) is None

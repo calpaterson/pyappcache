@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Any
 
 from .keys import Key
 
@@ -15,11 +15,23 @@ class Cache(metaclass=ABCMeta):
         pass  # pragma: no cover
 
     @abstractmethod
+    def get_by_str(self, key_str: str) -> Any:
+        pass  # pragma: no cover
+
+    @abstractmethod
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         pass  # pragma: no cover
 
     @abstractmethod
+    def set_by_str(self, key: str, value: V_inv, ttl_seconds: int = 0) -> None:
+        pass  # pragma: no cover
+
+    @abstractmethod
     def invalidate(self, key: Key[V_inv]) -> None:
+        pass  # pragma: no cover
+
+    @abstractmethod
+    def invalidate_by_str(self, key_str: str) -> None:
         pass  # pragma: no cover
 
     @abstractmethod

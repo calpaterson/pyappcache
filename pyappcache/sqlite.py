@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime, timedelta
 from contextlib import closing
 import sqlite3
@@ -105,11 +105,16 @@ class SqliteCache(Cache):
             self.conn.commit()
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
+        return self.get_raw(build_raw_key(self.prefix, key))
+
+    def get_by_str(self, key_str: str) -> Any:
+        return self.get_raw(build_raw_key(self.prefix, key_str))
+
+    def get_raw(self, raw_key: str) -> Any:
         now = datetime.utcnow()
-        key_bytes = build_raw_key(self.prefix, key)
         with closing(self.conn.cursor()) as cursor:
-            cursor.execute(TOUCH_DML, (now, key_bytes, now))
-            cursor.execute(GET_DQL, (key_bytes,))
+            cursor.execute(TOUCH_DML, (now, raw_key, now))
+            cursor.execute(GET_DQL, (raw_key,))
             rv = cursor.fetchone()
             self.conn.commit()
         if rv is not None:
@@ -121,6 +126,13 @@ class SqliteCache(Cache):
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
         self.set_raw(
             build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
+        )
+
+    def set_by_str(self, key_str: str, value: V_inv, ttl_seconds: int = 0) -> None:
+        self.set_raw(
+            build_raw_key(self.prefix, key_str),
+            self.serialiser.dumps(value),
+            ttl_seconds,
         )
 
     def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
@@ -141,9 +153,14 @@ class SqliteCache(Cache):
         return int(ttl_td.total_seconds())
 
     def invalidate(self, key: Key[V_inv]) -> None:
-        key_bytes = build_raw_key(self.prefix, key)
+        self.invalidate_raw(build_raw_key(self.prefix, key))
+
+    def invalidate_by_str(self, key_str: str) -> None:
+        self.invalidate_raw(build_raw_key(self.prefix, key_str))
+
+    def invalidate_raw(self, raw_key: str) -> None:
         with closing(self.conn.cursor()) as cursor:
-            cursor.execute(INVALIDATE_DML, (key_bytes,))
+            cursor.execute(INVALIDATE_DML, (raw_key,))
             self.conn.commit()
 
     def clear(self) -> None:
