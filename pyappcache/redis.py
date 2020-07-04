@@ -1,4 +1,4 @@
-from typing import Sequence, Mapping, Optional
+from typing import Optional
 from logging import getLogger
 
 import redis as redis_py
@@ -13,19 +13,9 @@ logger = getLogger(__name__)
 class RedisCache(Cache):
     """An implementation of Cache for memcache."""
 
-    def __init__(
-        self,
-        client_args: Optional[Sequence] = None,
-        client_kwargs: Optional[Mapping] = None,
-    ):
+    def __init__(self, client: redis_py.Redis):
         self.serialiser = PickleSerialiser()
-        if client_args is None:
-            client_args = []
-        if client_kwargs is None:
-            client_kwargs = {}
-
-        self._redis = redis_py.Redis(*client_args, **client_kwargs)
-        logger.debug("connected to %s", self._redis.connection_pool.connection_kwargs)
+        self._redis = client
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         cache_contents = self._redis.get(build_raw_key(self.prefix, key))

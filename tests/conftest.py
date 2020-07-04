@@ -1,3 +1,6 @@
+import redis as redis_py
+import pylibmc
+
 from pyappcache.memcache import MemcacheCache
 from pyappcache.redis import RedisCache
 from pyappcache.sqlite import SqliteCache
@@ -10,11 +13,11 @@ from .utils import random_bytes
 def cache_instance(request):
     """Cache object"""
     if request.param == "redis":
-        return RedisCache()
+        return RedisCache(redis_py.Redis())
     elif request.param == "sqlite":
         return SqliteCache()
     else:
-        return MemcacheCache()
+        return MemcacheCache(pylibmc.Client(["127.0.0.1"]))
 
 
 @pytest.fixture(scope="function")

@@ -1,3 +1,6 @@
+import contextlib
+import sqlite3
+
 from pyappcache.sqlite import SqliteCache
 from .utils import StringToStringKey
 
@@ -18,8 +21,9 @@ def test_sqlite_lru_with_backing_file(tmp_path):
     memory option)"""
     path = tmp_path / "cache.sqlite3"
 
-    cache = SqliteCache(max_size=5, connection_string=str(path))
+    with contextlib.closing(sqlite3.connect(str(path))) as connection:
+        cache = SqliteCache(max_size=5, connection=connection)
 
-    cache.set(StringToStringKey("a"), "b")
+        cache.set(StringToStringKey("a"), "b")
 
-    assert path.exists()
+        assert path.exists()

@@ -89,12 +89,14 @@ def get_in_memory_conn():
 class SqliteCache(Cache):
     """An implementation of Cache for sqlite3"""
 
-    def __init__(self, max_size=MAX_SIZE, connection_string=None):
+    def __init__(
+        self, max_size=MAX_SIZE, connection: Optional[sqlite3.Connection] = None
+    ):
         self.serialiser = PickleSerialiser()
-        if connection_string is None:
+        if connection is None:
             self.conn = get_in_memory_conn()
         else:
-            self.conn = sqlite3.connect(connection_string)
+            self.conn = connection
         self.max_size = max_size
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(CREATE_DDL)
