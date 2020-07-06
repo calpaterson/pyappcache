@@ -5,7 +5,6 @@ import redis as redis_py
 
 from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
-from .serialisation import PickleSerialiser
 
 logger = getLogger(__name__)
 
@@ -14,7 +13,7 @@ class RedisCache(Cache):
     """An implementation of Cache for memcache."""
 
     def __init__(self, client: redis_py.Redis):
-        self.serialiser = PickleSerialiser()
+        super().__init__()
         self._redis = client
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:

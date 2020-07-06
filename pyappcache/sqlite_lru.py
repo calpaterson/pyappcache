@@ -5,7 +5,6 @@ import sqlite3
 
 from dateutil.parser import parse as parse_dt
 
-from .serialisation import PickleSerialiser
 from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
 
@@ -98,7 +97,7 @@ class SqliteCache(Cache):
     def __init__(
         self, max_size=MAX_SIZE, connection: Optional[sqlite3.Connection] = None
     ):
-        self.serialiser = PickleSerialiser()
+        super().__init__()
         if connection is None:
             self.conn = get_in_memory_conn()
         else:

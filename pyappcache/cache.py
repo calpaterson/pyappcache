@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from typing import Optional, TypeVar, Any
 
+from .compression import DefaultGZIPCompressor
+from .serialisation import PickleSerialiser
 from .keys import Key
 
 K_inv = TypeVar("K_inv")
@@ -8,7 +10,10 @@ V_inv = TypeVar("V_inv")
 
 
 class Cache(metaclass=ABCMeta):
-    prefix: str = "/pyappcache/"
+    def __init__(self):
+        self.prefix = "/pyappcache/"
+        self.compressor = DefaultGZIPCompressor()
+        self.serialiser = PickleSerialiser()
 
     @abstractmethod
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:

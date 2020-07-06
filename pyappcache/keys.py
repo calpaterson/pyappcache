@@ -1,10 +1,13 @@
 from typing import TypeVar, Sequence, Union
 from typing_extensions import Protocol
 
-V = TypeVar("V", covariant=True)
+V = TypeVar("V", contravariant=True)
 
 
 class Key(Protocol[V]):
+    def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
+        pass  # pragma: no cover
+
     def as_segments(self) -> Sequence[str]:
         pass  # pragma: no cover
 
@@ -12,6 +15,9 @@ class Key(Protocol[V]):
 class GenericStringKey(Key[V]):
     def __init__(self, key_str: str):
         self.key_str = key_str
+
+    def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
+        return False
 
     def __repr__(self):
         return f"<GenericStringKey '{self.key_str}'>"

@@ -1,3 +1,4 @@
+from pyappcache.serialisation import PickleSerialiser
 from .utils import StringToIntKey
 
 
@@ -9,3 +10,10 @@ def test_simple_key_to_segments():
 def test_simple_key_repr():
     key = StringToIntKey("freddie")
     assert repr(key) == "<GenericStringKey 'freddie'>"
+
+
+def test_should_compress():
+    key = StringToIntKey("freddie")
+    obj = 1
+    as_bytes = PickleSerialiser().dumps(obj)
+    assert key.should_compress(obj, as_bytes) is False

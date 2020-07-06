@@ -3,7 +3,6 @@ from logging import getLogger
 
 from .keys import Key, build_raw_key
 from .cache import Cache, V_inv
-from .serialisation import PickleSerialiser
 
 logger = getLogger(__name__)
 
@@ -12,8 +11,8 @@ class MemcacheCache(Cache):
     """An implementation of Cache for memcache."""
 
     def __init__(self, client):
+        super().__init__()
         self._mc = client
-        self.serialiser = PickleSerialiser()
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         return self.get_raw(build_raw_key(self.prefix, key))
