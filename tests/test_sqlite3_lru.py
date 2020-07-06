@@ -27,3 +27,19 @@ def test_sqlite_lru_with_backing_file(tmp_path):
         cache.set(StringToStringKey("a"), "b")
 
         assert path.exists()
+
+
+def test_in_memory_db_naming():
+    """Test that our in memory sqlite db does not clash with ordinary
+    ':memory:' sqlite databases."""
+    cache = SqliteCache()
+
+    cache.set(StringToStringKey("a"), "b")
+
+    table_dql = """
+    SELECT name FROM sqlite_master WHERE type = 'table';
+    """
+    in_memory_conn = sqlite3.connect(":memory:")
+    tables = in_memory_conn.execute(table_dql).fetchall()
+
+    assert len(tables) == 0

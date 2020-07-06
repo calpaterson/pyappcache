@@ -79,10 +79,16 @@ _in_memory_conn = None
 
 
 def get_in_memory_conn():
-    """Get a shared in-memory connection"""
+    """Get a shared in-memory connection.
+
+    This in-memory conneciton uses the internal name 'pyappcache_memory', a """
     global _in_memory_conn
     if _in_memory_conn is None:
-        _in_memory_conn = sqlite3.connect(":memory:")
+        # This avoids clobbering other in memory sqlite databases (but allows
+        # us to use them from different threads)
+        _in_memory_conn = sqlite3.connect(
+            "file:pyappcache_memory?mode=memory&cache=shared"
+        )
     return _in_memory_conn
 
 
