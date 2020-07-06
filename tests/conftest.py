@@ -3,7 +3,7 @@ import pylibmc
 
 from pyappcache.memcache import MemcacheCache
 from pyappcache.redis import RedisCache
-from pyappcache.sqlite import SqliteCache
+from pyappcache.sqlite_lru import SqliteCache
 
 import pytest
 from .utils import random_string

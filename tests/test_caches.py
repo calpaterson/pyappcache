@@ -1,6 +1,6 @@
 from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
-from pyappcache.sqlite import SqliteCache
+from pyappcache.sqlite_lru import SqliteCache
 from pyappcache.cache import Cache
 
 from .utils import random_string, get_memcache_ttl, StringToIntKey

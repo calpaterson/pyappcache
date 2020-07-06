@@ -1,7 +1,7 @@
 import contextlib
 import sqlite3
 
-from pyappcache.sqlite import SqliteCache
+from pyappcache.sqlite_lru import SqliteCache
 from .utils import StringToStringKey
 
 
