@@ -1,5 +1,3 @@
-import sqlite3
-
 import redis as redis_py
 import pylibmc
 
