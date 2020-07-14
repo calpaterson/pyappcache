@@ -45,12 +45,16 @@ class Cache(metaclass=ABCMeta):
             as_bytes = as_pickle
         self.set_raw(build_raw_key(self.prefix, key), as_bytes, ttl_seconds)
 
-    def set_by_str(self, key_str: str, value: V_inv, ttl_seconds: int = 0) -> None:
-        # FIXME: need a way to compress here
+    def set_by_str(
+        self, key_str: str, value: V_inv, ttl_seconds: int = 0, compress: bool = False
+    ) -> None:
+        as_pickle = self.serialiser.dumps(value)
+        if compress:
+            as_bytes = self.compressor.compress(as_pickle)
+        else:
+            as_bytes = as_pickle
         self.set_raw(
-            build_raw_key(self.prefix, key_str),
-            self.serialiser.dumps(value),
-            ttl_seconds,
+            build_raw_key(self.prefix, key_str), as_bytes, ttl_seconds,
         )
 
     @abstractmethod

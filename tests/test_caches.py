@@ -102,9 +102,15 @@ def test_by_str(cache, KeyCls):
     assert cache.get(key) is None
 
 
-def test_compression(cache):
+def test_compression_via_key(cache):
     key = StringToStringKeyWithCompression(random_string())
     cache.set(key, "b")
 
     raw_value = cache.get_raw(build_raw_key(cache.prefix, key))
+    assert raw_value.startswith(b"\x1f\x8b")
+
+
+def test_compression_via_str(cache):
+    cache.set_by_str("a", "b", compress=True)
+    raw_value = cache.get_raw(build_raw_key(cache.prefix, "a"))
     assert raw_value.startswith(b"\x1f\x8b")
