@@ -18,6 +18,8 @@ class Cache(metaclass=ABCMeta):
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
         cache_contents = self.get_raw(build_raw_key(self.prefix, key))
         if cache_contents is not None:
+            if self.compressor.is_compressed(cache_contents):
+                cache_contents = self.compressor.decompress(cache_contents)
             return self.serialiser.loads(cache_contents)
         else:
             return None
@@ -25,6 +27,8 @@ class Cache(metaclass=ABCMeta):
     def get_by_str(self, key_str: str) -> Optional[Any]:
         cache_contents = self.get_raw(build_raw_key(self.prefix, key_str))
         if cache_contents is not None:
+            if self.compressor.is_compressed(cache_contents):
+                cache_contents = self.compressor.decompress(cache_contents)
             return self.serialiser.loads(cache_contents)
         else:
             return None
@@ -34,11 +38,15 @@ class Cache(metaclass=ABCMeta):
         pass  # pragma: no cover
 
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(
-            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
-        )
+        as_pickle = self.serialiser.dumps(value)
+        if key.should_compress(value, as_pickle):
+            as_bytes = self.compressor.compress(as_pickle)
+        else:
+            as_bytes = as_pickle
+        self.set_raw(build_raw_key(self.prefix, key), as_bytes, ttl_seconds)
 
     def set_by_str(self, key_str: str, value: V_inv, ttl_seconds: int = 0) -> None:
+        # FIXME: need a way to compress here
         self.set_raw(
             build_raw_key(self.prefix, key_str),
             self.serialiser.dumps(value),

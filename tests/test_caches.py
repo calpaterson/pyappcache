@@ -102,7 +102,6 @@ def test_by_str(cache, KeyCls):
     assert cache.get(key) is None
 
 
-@pytest.mark.xfail(reason="not implemented")
 def test_compression(cache):
     key = StringToStringKeyWithCompression(random_string())
     cache.set(key, "b")
