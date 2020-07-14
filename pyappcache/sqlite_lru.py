@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 from datetime import datetime, timedelta
 from contextlib import closing
 import sqlite3
@@ -95,7 +95,7 @@ class SqliteCache(Cache):
     """An implementation of Cache for sqlite3"""
 
     def __init__(
-        self, max_size=MAX_SIZE, connection: Optional[sqlite3.Connection] = None
+        self, max_size: int = MAX_SIZE, connection: Optional[sqlite3.Connection] = None
     ):
         super().__init__()
         if connection is None:
@@ -118,7 +118,7 @@ class SqliteCache(Cache):
             self.conn.commit()
         if rv is not None:
             (cache_contents,) = rv
-            return cache_contents
+            return cast(bytes, cache_contents)
         else:
             return None
 
@@ -130,7 +130,7 @@ class SqliteCache(Cache):
             cursor.execute(EVICT_DML, (self.max_size,))
             self.conn.commit()
 
-    def ttl(self, key_bytes) -> Optional[int]:
+    def ttl(self, key_bytes: str) -> Optional[int]:
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(GET_TTL_DQL, (key_bytes,))

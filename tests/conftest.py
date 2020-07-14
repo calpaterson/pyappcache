@@ -21,7 +21,7 @@ def redis_client():
 
 
 @pytest.fixture(scope="function", params=["redis", "memcache", "sqlite"])
-def cache(request, redis_client, memcache_client) -> Cache:
+def cache(request, redis_client, memcache_client):
     """Cache object"""
     cache: Cache
     if request.param == "redis":

@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Optional, TypeVar, Any
+from typing import Optional, TypeVar, Any, cast
 
 from .compression import DefaultGZIPCompressor
 from .serialisation import PickleSerialiser
@@ -20,7 +20,7 @@ class Cache(metaclass=ABCMeta):
         if cache_contents is not None:
             if self.compressor.is_compressed(cache_contents):
                 cache_contents = self.compressor.decompress(cache_contents)
-            return self.serialiser.loads(cache_contents)
+            return cast(V_inv, self.serialiser.loads(cache_contents))
         else:
             return None
 

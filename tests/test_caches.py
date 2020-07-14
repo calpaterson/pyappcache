@@ -1,7 +1,6 @@
 from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite_lru import SqliteCache
-from pyappcache.cache import Cache
 
 import pytest
 from .utils import random_string, StringToStringKey
@@ -17,7 +16,7 @@ def KeyCls(request):
     return request.param
 
 
-def test_get_and_set_no_ttl(cache: Cache, KeyCls):
+def test_get_and_set_no_ttl(cache, KeyCls):
     v = "a"
     key = KeyCls(random_string())
     cache.set(key, v)

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 from logging import getLogger
 
 import redis as redis_py
@@ -17,7 +17,7 @@ class RedisCache(Cache):
         self._redis = client
 
     def get_raw(self, raw_key: str) -> Optional[bytes]:
-        return self._redis.get(raw_key)
+        return cast(Optional[bytes], self._redis.get(raw_key))
 
     def set_raw(self, key_bytes: str, value_bytes: bytes, ttl_seconds: int) -> None:
         self._redis.set(
