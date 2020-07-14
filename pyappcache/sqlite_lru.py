@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Optional
 from datetime import datetime, timedelta
 from contextlib import closing
 import sqlite3
@@ -109,13 +109,7 @@ class SqliteCache(Cache):
                 cursor.execute(index_ddl)
             self.conn.commit()
 
-    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
-        return self.get_raw(build_raw_key(self.prefix, key))
-
-    def get_by_str(self, key_str: str) -> Any:
-        return self.get_raw(build_raw_key(self.prefix, key_str))
-
-    def get_raw(self, raw_key: str) -> Any:
+    def get_raw(self, raw_key: str) -> Optional[bytes]:
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, raw_key, now))
@@ -124,21 +118,9 @@ class SqliteCache(Cache):
             self.conn.commit()
         if rv is not None:
             (cache_contents,) = rv
-            return self.serialiser.loads(cache_contents)
+            return cache_contents
         else:
             return None
-
-    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(
-            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
-        )
-
-    def set_by_str(self, key_str: str, value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(
-            build_raw_key(self.prefix, key_str),
-            self.serialiser.dumps(value),
-            ttl_seconds,
-        )
 
     def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()

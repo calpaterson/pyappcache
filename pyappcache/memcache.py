@@ -14,28 +14,8 @@ class MemcacheCache(Cache):
         super().__init__()
         self._mc = client
 
-    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
-        return self.get_raw(build_raw_key(self.prefix, key))
-
-    def get_by_str(self, key_str: str) -> Any:
-        return self.get_raw(build_raw_key(self.prefix, key_str))
-
     def get_raw(self, raw_key: str) -> Optional[Any]:
-        cache_contents = self._mc.get(raw_key)
-        if cache_contents is not None:
-            return self.serialiser.loads(cache_contents)
-        else:
-            return None
-
-    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(
-            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
-        )
-
-    def set_by_str(self, key: str, value: V_inv, ttl_seconds: int = 0) -> None:
-        self.set_raw(
-            build_raw_key(self.prefix, key), self.serialiser.dumps(value), ttl_seconds
-        )
+        return self._mc.get(raw_key)
 
     def set_raw(self, key_str: str, value_bytes: bytes, ttl: int) -> None:
         self._mc.set(key_str, value_bytes, time=ttl)
