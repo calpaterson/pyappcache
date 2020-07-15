@@ -5,6 +5,8 @@ V = TypeVar("V", contravariant=True)
 
 
 class Key(Protocol[V]):
+    # FIXME: should should_compress be required?  or just an optional thing to
+    # implement
     def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
         pass  # pragma: no cover
 
@@ -12,6 +14,7 @@ class Key(Protocol[V]):
         pass  # pragma: no cover
 
 
+# FIXME: is it possible to make this a KeyBase or something?
 class GenericStringKey(Key[V]):
     def __init__(self, key_str: str):
         self.key_str = key_str
