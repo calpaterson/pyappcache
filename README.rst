@@ -1,5 +1,5 @@
-# pyappcache
-
+pyappcache
+==========
 
 Pyappcache is a library to make it easier to use application-level
 caching in Python.
@@ -17,8 +17,8 @@ caching in Python.
       so you can also use it as an HTTP cache with
       `requests <https://pypi.org/project/requests/>`__
 
-## A simple example
-
+A simple example
+----------------
 
 .. code:: python
 
@@ -40,9 +40,11 @@ caching in Python.
     # This variable's type will be inferred as datetime.date
     special_date = cache.get(key)
 
-## How it compares to alternatives
+How it compares to alternatives
+-------------------------------
 
-### Using the redis/memcache/sqlite client directly
+Using the redis/memcache/sqlite client directly
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Explicit key objects allow for type inference and encapsulation of keying
 - Key prefixing
@@ -50,7 +52,8 @@ caching in Python.
 - Hopefully the overhead is small (not yet tested!)
 - Portable between redis/memcache/sqlite, etc
 
-### dogpile.cache
+dogpile.cache
+~~~~~~~~~~~~~
 
 - Explicit key objects allow for type inference and encapsulation of keying
 - As yet there is no locking in pyappcache
