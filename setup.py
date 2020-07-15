@@ -1,13 +1,17 @@
 from setuptools import setup, find_packages
 
 VERSION = open("VERSION").read().strip()
+README = open("README.rst").read()
 
 setup(
     name="pyappcache",
+
     version=VERSION,
     packages=find_packages(exclude=["tests.*", "tests"]),
     package_data={"pyappcache": ["py.typed"]},
     include_package_data=True,
+    long_description=README,
+    long_description_content_type="text/markdown",
     zip_safe=True,
     python_requires=">=3.6",
     install_requires=["typing_extensions", "pylibmc", "redis>=3", "python-dateutil"],
