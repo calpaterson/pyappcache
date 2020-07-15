@@ -5,7 +5,6 @@ README = open("README.rst").read()
 
 setup(
     name="pyappcache",
-
     version=VERSION,
     packages=find_packages(exclude=["tests.*", "tests"]),
     package_data={"pyappcache": ["py.typed"]},
