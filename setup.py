@@ -9,6 +9,7 @@ setup(
     package_data={"pyappcache": ["py.typed"]},
     include_package_data=True,
     zip_safe=True,
+    python_requires=">=3.6",
     install_requires=["typing_extensions", "pylibmc", "redis>=3", "python-dateutil"],
     extras_require={
         "tests": [
