@@ -7,7 +7,7 @@ from pyappcache.redis import RedisCache
 from pyappcache.sqlite_lru import SqliteCache
 
 import pytest
-from .utils import random_string
+from .utils import random_string, StringToStringKey, StringToStringKeyWithCompression
 
 
 @pytest.fixture(scope="session")
@@ -35,3 +35,8 @@ def cache(request, redis_client, memcache_client):
     cache.prefix = "".join(["/", random_string(), "/"])
 
     return cache
+
+
+@pytest.fixture(params=[StringToStringKey, StringToStringKeyWithCompression])
+def KeyCls(request):
+    return request.param

@@ -8,10 +8,15 @@ from logging import getLogger
 
 from pyappcache.keys import GenericStringKey
 
+logger = getLogger(__name__)
+
 StringToIntKey = GenericStringKey[int]
 StringToStringKey = GenericStringKey[str]
 
-logger = getLogger(__name__)
+
+class StringToStringKeyWithCompression(StringToStringKey):
+    def should_compress(self, python_obj, as_bytes):
+        return True
 
 
 def random_string() -> str:

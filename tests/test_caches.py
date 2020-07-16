@@ -3,17 +3,7 @@ from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite_lru import SqliteCache
 
 import pytest
-from .utils import random_string, StringToStringKey
-
-
-class StringToStringKeyWithCompression(StringToStringKey):
-    def should_compress(self, python_obj, as_bytes):
-        return True
-
-
-@pytest.fixture(params=[StringToStringKey, StringToStringKeyWithCompression])
-def KeyCls(request):
-    return request.param
+from .utils import random_string, StringToStringKeyWithCompression
 
 
 def test_get_and_set_no_ttl(cache, KeyCls):
