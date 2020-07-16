@@ -1,8 +1,7 @@
 from typing import Optional, Any
 from logging import getLogger
 
-from .keys import Key, build_raw_key
-from .cache import Cache, V_inv
+from .cache import Cache
 
 logger = getLogger(__name__)
 
@@ -17,14 +16,13 @@ class MemcacheCache(Cache):
     def get_raw(self, raw_key: str) -> Optional[Any]:
         return self._mc.get(raw_key)
 
-    def set_raw(self, key_str: str, value_bytes: bytes, ttl: int) -> None:
-        self._mc.set(key_str, value_bytes, time=ttl)
+    def set_raw(self, raw_key: str, value_bytes: bytes, ttl: int) -> None:
+        # FIXME: check that keys don't include control characters or whitespace
+        # Or add a note?
+        self._mc.set(raw_key, value_bytes, time=ttl)
 
-    def invalidate(self, key: Key[V_inv]) -> None:
-        self._mc.delete(build_raw_key(self.prefix, key))
-
-    def invalidate_by_str(self, key_str: str) -> None:
-        self._mc.delete(build_raw_key(self.prefix, key_str))
+    def invalidate_raw(self, raw_key: str) -> None:
+        self._mc.delete(raw_key)
 
     def clear(self) -> None:
         """Clear the cache.

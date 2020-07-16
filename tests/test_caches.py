@@ -60,7 +60,9 @@ def test_clear(cache, KeyCls):
 
 def test_unreadable_pickle(cache, KeyCls):
     key = KeyCls(random_string())
-    key_bytes = cache.prefix + "".join(key.as_segments())
+    key_segments = [cache.prefix]
+    key_segments.extend(key.as_segments())
+    key_bytes = "/".join(key_segments)
     cache.set_raw(key_bytes, b"good luck unpickling this", 0)
 
     assert cache.get(key) is None
@@ -81,7 +83,7 @@ def test_by_str(cache, KeyCls):
     cache.set(key, "a")
     assert cache.get_by_str(str_key) == "a"
 
-    cache.invalidate(str_key)
+    cache.invalidate_by_str(str_key)
     assert cache.get_by_str(key) is None
 
     cache.set_by_str(str_key, "b")

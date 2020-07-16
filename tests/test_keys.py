@@ -7,11 +7,6 @@ def test_simple_key_to_segments():
     assert key.as_segments() == ["freddie"]
 
 
-def test_simple_key_repr():
-    key = StringToIntKey("freddie")
-    assert repr(key) == "<GenericStringKey 'freddie'>"
-
-
 def test_should_compress():
     key = StringToIntKey("freddie")
     obj = 1

@@ -5,8 +5,7 @@ import sqlite3
 
 from dateutil.parser import parse as parse_dt
 
-from .keys import Key, build_raw_key
-from .cache import Cache, V_inv
+from .cache import Cache
 
 CREATE_DDL = """
 CREATE TABLE IF NOT EXISTS pyappcache
@@ -138,12 +137,6 @@ class SqliteCache(Cache):
         expiry_dt = parse_dt(expiry)
         ttl_td = expiry_dt - now
         return int(ttl_td.total_seconds())
-
-    def invalidate(self, key: Key[V_inv]) -> None:
-        self.invalidate_raw(build_raw_key(self.prefix, key))
-
-    def invalidate_by_str(self, key_str: str) -> None:
-        self.invalidate_raw(build_raw_key(self.prefix, key_str))
 
     def invalidate_raw(self, raw_key: str) -> None:
         with closing(self.conn.cursor()) as cursor:

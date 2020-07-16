@@ -12,7 +12,7 @@ from .utils import random_string, StringToStringKey, StringToStringKeyWithCompre
 
 @pytest.fixture(scope="session")
 def memcache_client():
-    return pylibmc.Client(["127.0.0.1"])
+    return pylibmc.Client(["127.0.0.1"], binary=True)
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +32,7 @@ def cache(request, redis_client, memcache_client):
         cache = MemcacheCache(memcache_client)
 
     # Randomise the prefix
-    cache.prefix = "".join(["/", random_string(), "/"])
+    cache.prefix = random_string()
 
     return cache
 
