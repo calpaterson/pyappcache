@@ -24,6 +24,7 @@ setup(
             "pytest-cov~=2.10.0",
             "flake8~=3.8.3",
         ],
+        "docs": ["sphinx~=3.1.2"],
         "dev": ["wheel~=0.33.6", "black~=19.10b0", "mypy~=0.750", "bpython~=0.18"],
     },
 )
