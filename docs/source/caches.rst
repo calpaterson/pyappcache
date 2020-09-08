@@ -35,6 +35,8 @@ can be handy for scripts.
 
 .. autofunction:: pyappcache.sqlite_lru.get_in_memory_conn
 
+.. _local sqlite file as cache:
+
 Storing your cache in a local sqlite file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -53,4 +55,19 @@ aren't able to run a "proper" cache server like memcache or redis.
 Implementing support for your own cache
 ---------------------------------------
 
-FIXME: hints on what methods to implement
+If you use something else as a cache (a filesystem, some SQL database)
+implementing a custom driver is not too hard.
+
+You need only subclass :class:`~pyappcache.cache.Cache` and implement four
+abstract methods:
+
+.. automethod:: pyappcache.cache.Cache.get_raw
+
+.. automethod:: pyappcache.cache.Cache.set_raw
+
+.. automethod:: pyappcache.cache.Cache.invalidate_raw
+
+.. automethod:: pyappcache.cache.Cache.clear
+
+:class:`~pyappcache.cache.Cache` is implemented entirely in terms of these four
+methods and will then be able to offer full functionality.

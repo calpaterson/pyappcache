@@ -12,6 +12,8 @@ used in conjunction with the `CacheControl
 CacheControl provides the HTTP caching logic and Pyappcache provides the cache
 backends.
 
+.. autoclass:: pyappcache.util.requests.CacheControlProxy
+
 Example code
 ^^^^^^^^^^^^
 
@@ -38,7 +40,7 @@ Example code
     cached_session.get("http://calpaterson.com")
 
 
-API
-^^^
+Using a local sqlite file as a cache
+------------------------------------
 
-.. autoclass:: pyappcache.util.requests.CacheControlProxy
+See :ref:`local sqlite file as cache`

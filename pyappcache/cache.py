@@ -117,14 +117,27 @@ class Cache(metaclass=ABCMeta):
 
     @abstractmethod
     def get_raw(self, key_str: str) -> Optional[bytes]:
+        """Look up a value (as bytes) from a concrete key string.
+
+        :param key_str: the (fully prefixed) key string to look up
+
+        """
         pass  # pragma: no cover
 
     @abstractmethod
     def set_raw(self, key_str: str, value_bytes: bytes, ttl_seconds: int) -> None:
+        """Set a value (as bytes) by a concrete key string.
+
+        :param key_str: the (fully prefixed) key string to set.
+        """
         pass  # pragma: no cover
 
     @abstractmethod
     def invalidate_raw(self, key_str: str) -> None:
+        """Invalidate a key by a concrete key string.
+
+        :param key_str: the (fully prefixed) key string to invalidate
+        """
         pass  # pragma: no cover
 
     @abstractmethod
@@ -132,5 +145,7 @@ class Cache(metaclass=ABCMeta):
         """Remove all keys from the cache.
 
         For most caches this will remove absolutely everything from the
-        server, so use with care."""
+        server, so use with care.
+
+        """
         pass  # pragma: no cover
