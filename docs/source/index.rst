@@ -7,9 +7,10 @@ such as memcache or redis.
 .. toctree::
    :maxdepth: 3
 
+   rationale
    quickstart
-   caches
    keys
+   caches
    common_patterns
 
 

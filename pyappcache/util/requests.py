@@ -7,6 +7,10 @@ CacheControlKey = GenericStringKey[bytes]
 
 
 class CacheControlProxy:
+    """A proxy to allow :class:`~pyappcache.cache.Cache` instances to be
+    converted for the cachecontrol library's desired API.
+
+    """
     def __init__(self, cache: Cache):
         self.cache = cache
 
