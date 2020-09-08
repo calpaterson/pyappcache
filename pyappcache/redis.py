@@ -9,9 +9,18 @@ logger = getLogger(__name__)
 
 
 class RedisCache(Cache):
-    """An implementation of Cache for memcache."""
+    """A redis :class:`~pyappcache.cache.Cache` instance.
+
+    Based on the GET/SET/DELETE operations.
+
+    Clearing will call FLUSHDB.
+
+    """
 
     def __init__(self, client: redis_py.Redis):
+        """
+
+        :param client: A redis client to use."""
         super().__init__()
         self._redis = client
 

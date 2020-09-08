@@ -6,7 +6,6 @@ from .compression import DefaultGZIPCompressor
 from .serialisation import PickleSerialiser
 from .keys import Key, build_raw_key
 
-K_inv = TypeVar("K_inv")
 V_inv = TypeVar("V_inv")
 
 
@@ -14,12 +13,20 @@ logger = getLogger(__name__)
 
 
 class Cache(metaclass=ABCMeta):
+    """Abstract base class for all caches.
+
+    :ivar prefix: A prefix that will be applied to cache keys to allow for multiple instances of this class to co-exist.  Exact use varies by particular cache.  Default is `'pyappcache'`.
+    :ivar compressor: The compressor that will be used when a key asks for compression.
+    :ivar serialiser: The serialiers that will be used to turn Python objects back and forth into bytes
+
+    """
     def __init__(self):
         self.prefix = "pyappcache"
         self.compressor = DefaultGZIPCompressor()
         self.serialiser = PickleSerialiser()
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
+        """Look up the value stored under a :class:`~pyappcache.keys.Key` instance"""
         namespace_key = key.namespace_key()
         if namespace_key is not None:
             namespace = self.lookup_namespace(namespace_key)
@@ -39,6 +46,9 @@ class Cache(metaclass=ABCMeta):
             return None
 
     def get_by_str(self, key_str: str) -> Optional[Any]:
+        """Look up the value stored under a :class:`str`.
+
+        Users of this method will have to construct string keys for themselves."""
         cache_contents = self.get_raw(build_raw_key(self.prefix, key_str))
         if cache_contents is not None:
             if self.compressor.is_compressed(cache_contents):
@@ -48,6 +58,7 @@ class Cache(metaclass=ABCMeta):
             return None
 
     def lookup_namespace(self, key: Key) -> Optional[str]:
+        # FIXME: is this required?
         namespace = self.get(key)
         if namespace is not None:
             return str(namespace)
@@ -55,6 +66,7 @@ class Cache(metaclass=ABCMeta):
             return None
 
     def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
+        """Set a value by :class:`~pyappcache.keys.Key`"""
         namespace_key = key.namespace_key()  # FIXME: move this inside lookup_namespace
         if namespace_key is not None:
             namespace = self.lookup_namespace(namespace_key)
@@ -75,6 +87,7 @@ class Cache(metaclass=ABCMeta):
     def set_by_str(
         self, key_str: str, value: V_inv, ttl_seconds: int = 0, compress: bool = False
     ) -> None:
+        """Set a value by a :class:`str`."""
         as_pickle = self.serialiser.dumps(value)
         if compress:
             as_bytes = self.compressor.compress(as_pickle)
@@ -85,6 +98,10 @@ class Cache(metaclass=ABCMeta):
         )
 
     def invalidate(self, key: Key[V_inv]) -> None:
+        """Invalidate by :class:`~pyappcache.keys.Key`.
+
+        Depending on the particular implementation of invalidation this may or
+        may not immediately free memory in the underlying cache (usually not)."""
         namespace_key = key.namespace_key()  # FIXME: move this inside lookup_namespace
         if namespace_key is not None:
             namespace = self.lookup_namespace(namespace_key)
@@ -112,4 +129,8 @@ class Cache(metaclass=ABCMeta):
 
     @abstractmethod
     def clear(self) -> None:
+        """Remove all keys from the cache.
+
+        For most caches this will remove absolutely everything from the
+        server, so use with care."""
         pass  # pragma: no cover

@@ -10,6 +10,9 @@ class MemcacheCache(Cache):
     """An implementation of Cache for memcache."""
 
     def __init__(self, client):
+        """
+
+        :param client: A (pylibmc) memcache client to use."""
         super().__init__()
         self._mc = client
 

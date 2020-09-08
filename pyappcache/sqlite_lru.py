@@ -79,7 +79,11 @@ _in_memory_conn = None
 def get_in_memory_conn():
     """Get a shared in-memory connection.
 
-    This in-memory conneciton uses the internal name 'pyappcache_memory', a """
+    This is used by :class:`~pyappcache.sqlite_lru.SqliteCache` to get a named
+    in-memory sqlite connection (`pyappcache_memory` - to avoid clobbering
+    other users of in-memory sqlite databases) and multi-thread support.
+
+    """
     global _in_memory_conn
     if _in_memory_conn is None:
         # This avoids clobbering other in memory sqlite databases (but allows
@@ -91,11 +95,23 @@ def get_in_memory_conn():
 
 
 class SqliteCache(Cache):
-    """An implementation of Cache for sqlite3"""
+    """Implementation of an LRU cache using sqlite3.
+
+    Note that as this is an LRU cache data accesses require write access (in
+    order to update the last-used time).
+
+    """
 
     def __init__(
         self, max_size: int = MAX_SIZE, connection: Optional[sqlite3.Connection] = None
     ):
+        """
+
+        :param max_size: Maximum size of the LRU cache.  Defaults to 10,000
+        :param connection: Optionally, you can pass an sqlite3 connection. By
+        default an in-memory database will be used (this will be is shared between all
+        instances).
+        """
         super().__init__()
         if connection is None:
             self.conn = get_in_memory_conn()
