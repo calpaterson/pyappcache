@@ -10,6 +10,7 @@ caching in Python.
       from the cache
 
 -  Supports Memcache, Redis and SQLite
+-  Supports working as a "read-through" and "write-through" cache
 -  Native support for key `"namespacing" <https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing>`__
 -  Provides a few handy extras
 
