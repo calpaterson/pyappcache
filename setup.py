@@ -22,7 +22,7 @@ setup(
             "cachecontrol",
             "flask~=1.1.2",
             "pytest-cov~=2.10.0",
-            "flake8~=3.8.3",
+            "pyflakes~=2.2.0",
         ],
         "docs": ["sphinx~=3.1.2"],
         "dev": ["wheel~=0.33.6", "black~=19.10b0", "mypy~=0.750", "bpython~=0.18"],
