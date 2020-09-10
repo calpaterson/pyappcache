@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- Support for operating as a read-through/write-through cache
+  - `get_via` (update-on-read)
+  - `set_via` (update-on-write)
 - Key "namespacing" (documentation to follow)
 
 ### Changed

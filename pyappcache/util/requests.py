@@ -11,6 +11,7 @@ class CacheControlProxy:
     converted for the cachecontrol library's desired API.
 
     """
+
     def __init__(self, cache: Cache):
         self.cache = cache
 

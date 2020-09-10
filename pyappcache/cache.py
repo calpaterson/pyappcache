@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from logging import getLogger
-from typing import Optional, TypeVar, Any, cast
+from typing import Optional, TypeVar, Any, cast, Callable, Sequence, Mapping
 
 from .compression import DefaultGZIPCompressor
 from .serialisation import PickleSerialiser
@@ -20,6 +20,7 @@ class Cache(metaclass=ABCMeta):
     :ivar serialiser: The serialiers that will be used to turn Python objects back and forth into bytes
 
     """
+
     def __init__(self):
         self.prefix = "pyappcache"
         self.compressor = DefaultGZIPCompressor()
@@ -57,6 +58,15 @@ class Cache(metaclass=ABCMeta):
         else:
             return None
 
+    def get_via(self, key: Key[V_inv], getter: Callable[[], V_inv]) -> V_inv:
+        cache_contents = self.get(key)
+        if cache_contents is None:
+            new_cache_contents = getter()
+            self.set(key, new_cache_contents)
+            return new_cache_contents
+        else:
+            return cache_contents
+
     def lookup_namespace(self, key: Key) -> Optional[str]:
         # FIXME: is this required?
         namespace = self.get(key)
@@ -83,6 +93,19 @@ class Cache(metaclass=ABCMeta):
         self.set_raw(
             build_raw_key(self.prefix, key, namespace=namespace), as_bytes, ttl_seconds
         )
+
+    def set_via(
+        self,
+        key: Key[V_inv],
+        value: V_inv,
+        setter: Callable[..., Any],
+        setter_args: Sequence = (),
+        setter_kwargs: Optional[Mapping] = None,
+    ) -> None:
+        if setter_kwargs is None:
+            setter_kwargs = {}
+        setter(*setter_args, **setter_kwargs)
+        self.set(key, value)
 
     def set_by_str(
         self, key_str: str, value: V_inv, ttl_seconds: int = 0, compress: bool = False

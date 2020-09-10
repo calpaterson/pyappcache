@@ -105,3 +105,49 @@ def test_compression_via_str(cache):
     cache.set_by_str("a", "b", compress=True)
     raw_value = cache.get_raw(build_raw_key(cache.prefix, "a"))
     assert raw_value.startswith(b"\x1f\x8b")
+
+
+def test_get_via(cache, KeyCls):
+    key = KeyCls(random_string())
+
+    getter_called = False
+
+    def fake_getter():
+        nonlocal getter_called
+        getter_called = True
+        return "ok"
+
+    cache.get_via(key, fake_getter)
+    assert getter_called is True
+
+    getter_called = False
+    cache.get_via(key, fake_getter)
+    assert getter_called is False
+
+
+def test_set_via(cache, KeyCls):
+    key = KeyCls(random_string())
+
+    db = {}
+
+    def fake_setter(id_, value):
+        db[id_] = value
+
+    value = random_string()
+    cache.set_via(key, value, fake_setter, setter_args=("a", value))
+
+    assert cache.get(key) == value
+    assert db["a"] == value
+
+
+def test_set_via_setter_fails(cache, KeyCls):
+    key = KeyCls(random_string())
+
+    def fake_setter(id_, value):
+        raise RuntimeError("bad bytes!")
+
+    value = random_string()
+    with pytest.raises(RuntimeError):
+        cache.set_via(key, value, fake_setter, setter_args=("a", value))
+
+    assert cache.get(key) is None

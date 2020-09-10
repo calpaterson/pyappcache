@@ -10,6 +10,7 @@ class Key(Protocol[V]):
     Instances of this class represent the keys for things that are stored in
     the cache.  The type variable associated with each instance is the type of
     the object held under this key."""
+
     def namespace_key(self) -> "Optional[Key[Any]]":
         """If this is a namespaced key, this method returns the key to the
         namespace that should be used - otherwise None.
