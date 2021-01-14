@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Removed
+
+## 0.2 - 2021-01-14
+
+### Added
 - Support for operating as a read-through/write-through cache
   - `get_via` (update-on-read)
   - `set_via` (update-on-write)
