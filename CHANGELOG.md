@@ -9,7 +9,8 @@
 - Key "namespacing" (documentation to follow)
 
 ### Changed
-- pylibmc is no longer a dependency
+- pylibmc and redis are now optional dependencies
+  - eg install `pyappcache[memcache]` or `pyappcache[redis]` to require them
 - Default cache prefix is now just "pyappcache" and slashes are added when building raw keys
 - The required API surface of caches has been reduced further
 - MemcacheCache will retry exactly once when pylibmc raises a ConnectionError

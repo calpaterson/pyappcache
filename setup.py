@@ -13,10 +13,11 @@ setup(
     long_description_content_type="text/markdown",
     zip_safe=True,
     python_requires=">=3.6",
-    install_requires=["typing_extensions", "redis>=3", "python-dateutil"],
+    install_requires=["typing_extensions", "python-dateutil"],
     extras_require={
+        "redis": ["redis>=3"],
+        "memcache": ["pylibmc"],
         "tests": [
-            "pylibmc",
             "pytest~=5.3.1",
             "requests",
             "cachecontrol",
