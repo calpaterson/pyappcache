@@ -3,6 +3,21 @@ from setuptools import setup, find_packages
 VERSION = open("VERSION").read().strip()
 README = open("README.rst").read()
 
+redis_requirements = ["redis>=3"]
+memcache_requirements = ["pylibmc"]
+test_requirements = [
+    "pytest~=5.3.1",
+    "requests",
+    "cachecontrol",
+    "flask~=1.1.2",
+    "pytest-cov~=2.10.0",
+    "pyflakes~=2.2.0",
+    "sphinx~=3.1.2",
+    "wheel~=0.33.6",
+    "black~=19.10b0",
+    "mypy==0.750",
+]
+
 setup(
     name="pyappcache",
     version=VERSION,
@@ -15,17 +30,9 @@ setup(
     python_requires=">=3.6",
     install_requires=["typing_extensions", "python-dateutil"],
     extras_require={
-        "redis": ["redis>=3"],
-        "memcache": ["pylibmc"],
-        "tests": [
-            "pytest~=5.3.1",
-            "requests",
-            "cachecontrol",
-            "flask~=1.1.2",
-            "pytest-cov~=2.10.0",
-            "pyflakes~=2.2.0",
-        ],
-        "docs": ["sphinx~=3.1.2"],
-        "dev": ["wheel~=0.33.6", "black~=19.10b0", "mypy~=0.750", "bpython~=0.18"],
+        "redis": redis_requirements,
+        "memcache": memcache_requirements,
+        "tests": test_requirements + memcache_requirements + redis_requirements,
+        "dev": ["bpython~=0.18"],
     },
 )

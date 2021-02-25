@@ -6,8 +6,8 @@ Pyappcache takes a slightly different approach to other cache libraries.
 First class key objects
 -----------------------
 
-In pyappcache, keys are a first class object (though strings can also be
-used).
+In pyappcache, keys are first class objects - though you can use strings too if
+you prefer.
 
 Make keys a first class object to make it easier to centralise logic around
 keying and avoid typos and other common mistakes that arise when using strings

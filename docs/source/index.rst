@@ -1,14 +1,14 @@
 pyappcache documentation
 ========================
 
-pyappcache is a Python library for keeping Python objects in a volatile cache
-such as memcache or redis.
+pyappcache is a Python library for using volatile caches such as memcache or
+redis.
 
 .. toctree::
    :maxdepth: 3
 
-   rationale
    quickstart
+   rationale
    keys
    caches
    common_patterns
