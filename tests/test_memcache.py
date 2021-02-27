@@ -4,6 +4,7 @@ import pylibmc
 import pytest
 
 from pyappcache.memcache import MemcacheCache
+from .utils import random_string
 
 
 class FlakeyClient:
@@ -62,3 +63,8 @@ def test_retry_gives_up_on_down():
     cache = MemcacheCache(FlakeyClient(2))
     with pytest.raises(pylibmc.ConnectionError):
         cache.get_by_str("foo")
+
+
+def test_default_client():
+    cache = MemcacheCache()
+    cache.get_by_str(random_string()) is None

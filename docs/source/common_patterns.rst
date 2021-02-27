@@ -14,24 +14,24 @@ backends.
 
 .. autoclass:: pyappcache.util.requests.CacheControlProxy
 
-Example code
-^^^^^^^^^^^^
-
 .. code:: python
 
     import requests
     import cachecontrol
-    from pyappcache.sqlite_lru import SqliteCache
+    from pyappcache.redis import RedisCache
     from pyappcache.util.requests import CacheControlProxy
 
-    # Create the cache object (in-memory is the default)
-    cache = SqliteCache()
+    # Create a Cache instance around Redis
+    cache = RedisCache()
 
     # Create the proxy, which implements CacheControl's desired API
     cc_proxy = CacheControlProxy(cache)
 
     # Create the session
-    cached_session = cachecontrol.CacheControl(requests.Session(), cache=cc_proxy)
+    cached_session = cachecontrol.CacheControl(
+        requests.Session(),
+        cache=cc_proxy
+    )
 
     # Make the request - first time not cached
     cached_session.get("http://calpaterson.com")
@@ -40,7 +40,19 @@ Example code
     cached_session.get("http://calpaterson.com")
 
 
-Using a local sqlite file as a cache
-------------------------------------
+Storing your cache in a local sqlite file
+-----------------------------------------
 
-See :ref:`local sqlite file as cache`
+.. _local sqlite file as cache:
+
+Sometimes it's handy to have the cache stored on disk.  This is not as fast as
+in-memory but can be handy if you need a way to persist cache entries but
+aren't able to run a "proper" cache server like memcache or redis.
+
+.. code:: python
+
+    import sqlite3
+    from pyappcache.sqlite_lru import SqliteCache
+
+    sqlite_db = sqlite3.connect("my_cache.sqlite3")
+    cache = SqliteCache(connection=sqlite_db)

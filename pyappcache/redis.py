@@ -11,18 +11,25 @@ logger = getLogger(__name__)
 class RedisCache(Cache):
     """A redis :class:`~pyappcache.cache.Cache` instance.
 
-    Based on the GET/SET/DELETE operations.
+    This uses ``GET``/``SET``/``DELETE``.
 
-    Clearing will call FLUSHDB.
+    .. admonition:: :meth:`~Cache.clear` uses ``FLUSHDB``
+
+       The clear method for this implementation will call ``FLUSHDB`` - and so
+       remove *everything* in the database.
 
     """
 
-    def __init__(self, client: redis_py.Redis):
+    def __init__(self, client: Optional[redis_py.Redis] = None):
         """
 
-        :param client: A redis client to use."""
+        :param client: A optional redis client to use.  If one isn't provided
+            database 0 on localhost is used."""
         super().__init__()
-        self._redis = client
+        if client is not None:
+            self._redis = client
+        else:
+            self._redis = redis_py.Redis()
 
     def get_raw(self, raw_key: str) -> Optional[bytes]:
         return cast(Optional[bytes], self._redis.get(raw_key))

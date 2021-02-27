@@ -1,4 +1,4 @@
-Compressiong and serialisation
+Compression and serialisation
 ==============================
 
 Pyappcache offers pluggable compression and serialisation so you can choose

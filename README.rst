@@ -26,12 +26,10 @@ A simple example
 
     from datetime import date
 
-    import redis
     from pyappcache.redis import RedisCache
     from pyappcache.keys import Key, GenericStringKey
 
-    client = redis.Redis()
-    cache = RedisCache(client)
+    cache = RedisCache()
 
     # Annotate the type here to let mypy know this key is used for dates
     key: Key[date] = GenericStringKey("mifid start date")
@@ -41,6 +39,7 @@ A simple example
 
     # This variable's type will be inferred as datetime.date
     special_date = cache.get(key)
+
 
 How it compares to alternatives
 -------------------------------

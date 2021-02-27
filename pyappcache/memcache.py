@@ -16,12 +16,15 @@ class MemcacheCache(Cache):
     restarts.
     """
 
-    def __init__(self, client):
+    def __init__(self, client: Optional[Any] = None):
         """
 
-        :param client: A (pylibmc) memcache client to use."""
+        :param client: A optional (pylibmc-compatible) memcache client to use."""
         super().__init__()
-        self._mc = client
+        if client is not None:
+            self._mc = client
+        else:
+            self._mc = pylibmc.Client(["127.0.0.1"], binary=True)
 
     def get_raw(self, raw_key: str) -> Optional[Any]:
         try:

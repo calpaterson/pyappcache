@@ -13,6 +13,9 @@ class CacheControlProxy:
     """
 
     def __init__(self, cache: Cache):
+        """
+
+        :parameter cache: An instances of :class:`~pyappcache.Cache` to proxy."""
         self.cache = cache
 
     def get(self, key_str: str) -> Optional[bytes]:
