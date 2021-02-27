@@ -44,4 +44,8 @@ setup(
     url="https://github.com/calpaterson/pyappcache",
     author="Cal Paterson",
     author_email="cal@calpaterson.com",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    ],
 )
