@@ -36,4 +36,12 @@ setup(
         "tests": test_requirements + memcache_requirements + redis_requirements,
         "dev": ["bpython~=0.18"],
     },
+    project_urls={
+        "Documentation": "https://pyappcache.readthedocs.io/en/latest/",
+        "Code": "https://github.com/calpaterson/pyappcache",
+        "Issue tracker": "https://github.com/calpaterson/pyappcache/issues",
+    },
+    url="https://github.com/calpaterson/pyappcache",
+    author="Cal Paterson",
+    author_email="cal@calpaterson.com",
 )
