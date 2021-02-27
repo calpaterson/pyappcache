@@ -99,7 +99,6 @@ class SqliteCache(Cache):
 
     Note that as this is an LRU cache data accesses require write access (in
     order to update the last-used time).
-
     """
 
     def __init__(
@@ -107,10 +106,10 @@ class SqliteCache(Cache):
     ):
         """
 
-        :param max_size: Maximum size of the LRU cache.  Defaults to 10,000
-        :param connection: Optionally, you can pass a sqlite3 connection. By
-        default an in-memory database will be used (this will be is shared between all
-        instances).
+        :parameter max_size: Maximum size of the LRU cache.  Defaults to 10,000
+        :parameter connection: Optionally, you can pass a sqlite3 connection. By
+            default an in-memory database will be used (this will be is shared between all
+            instances).
 
         """
         super().__init__()

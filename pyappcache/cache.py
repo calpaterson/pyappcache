@@ -13,17 +13,17 @@ logger = getLogger(__name__)
 
 
 class Cache(metaclass=ABCMeta):
-    """Abstract base class for all caches.
-
-    :ivar prefix: A prefix that will be applied to cache keys to allow for multiple instances of this class to co-exist.  Exact use varies by particular cache.  Default is `'pyappcache'`.
-    :ivar compressor: The compressor that will be used when a key asks for compression.
-    :ivar serialiser: The serialiers that will be used to turn Python objects back and forth into bytes
-
-    """
+    """The standard, cross backend, interface to a cache."""
 
     def __init__(self):
+        #: A prefix that will be applied to cache keys to allow for multiple
+        #: instances of this class to co-exist.  Exact use varies by particular
+        #: cache.  Default is `'pyappcache'`.
         self.prefix = "pyappcache"
+        #: The compressor that will be used when a key asks for compression.
+        #: Default is gzip via :class:`.compression.DefaultGZIPCompressor`
         self.compressor = DefaultGZIPCompressor()
+        #: The serialiers that will be used to turn Python objects back and forth into bytes
         self.serialiser = PickleSerialiser()
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:

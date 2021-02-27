@@ -11,6 +11,7 @@ redis.
    rationale
    keys
    caches
+   compression_and_serialisation
    common_patterns
 
 

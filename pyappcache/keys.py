@@ -1,6 +1,7 @@
 from typing import TypeVar, Sequence, Union, Optional, Any
 from typing_extensions import Protocol
 
+#: Key value
 V = TypeVar("V", contravariant=True)
 
 
