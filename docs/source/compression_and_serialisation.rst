@@ -8,10 +8,12 @@ defaults are gzip and pickle.
 Compression
 -----------
 
-.. autoclass:: pyappcache.compression.DefaultGZIPCompressor
+.. autoclass:: pyappcache.compression.GZIPCompressor
+               :members: level
 
 
 Serialisation
 -------------
 
 .. autoclass:: pyappcache.serialisation.PickleSerialiser
+               :members: pickle_protocol

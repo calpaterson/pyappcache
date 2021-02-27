@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from logging import getLogger
 from typing import Optional, TypeVar, Any, cast, Callable, Sequence, Mapping
 
-from .compression import DefaultGZIPCompressor
+from .compression import GZIPCompressor
 from .serialisation import PickleSerialiser
 from .keys import Key, build_raw_key
 
@@ -21,8 +21,8 @@ class Cache(metaclass=ABCMeta):
         #: cache.  Default is `'pyappcache'`.
         self.prefix = "pyappcache"
         #: The compressor that will be used when a key asks for compression.
-        #: Default is gzip via :class:`.compression.DefaultGZIPCompressor`
-        self.compressor = DefaultGZIPCompressor()
+        #: Default is gzip via :class:`.compression.GZIPCompressor`
+        self.compressor = GZIPCompressor()
         #: The serialiers that will be used to turn Python objects back and forth into bytes
         self.serialiser = PickleSerialiser()
 

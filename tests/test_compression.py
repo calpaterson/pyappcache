@@ -1,11 +1,11 @@
-from pyappcache.compression import DefaultGZIPCompressor
+from pyappcache.compression import GZIPCompressor
 
 import pytest
 
 
 @pytest.fixture(scope="session")
 def compressor():
-    return DefaultGZIPCompressor()
+    return GZIPCompressor()
 
 
 def test_compress_and_decompress(compressor):
