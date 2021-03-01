@@ -5,10 +5,7 @@ Pyappcache is a library to make it easier to use application-level
 caching in Python.
 
 -  Allows putting arbitrary Python objects into the cache
-
-   -  And provides type hints so you can typecheck what you get back
-      from the cache
-
+-  Uses PEP484 type hints to help you typecheck cache return values
 -  Supports Memcache, Redis and SQLite
 -  Supports working as a "read-through" and "write-through" cache
 -  Native support for key `"namespacing" <https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing>`__
@@ -48,8 +45,8 @@ Using the redis/memcache/sqlite client directly
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Explicit key objects allow for type inference and encapsulation of keying
-- Key prefixing
-- Optional compression
+- Keys are prefix to help prevent collisions
+- Optional, pluggable, compression
 - Hopefully the overhead is small (not yet tested!)
 - Portable between redis/memcache/sqlite, etc
 
@@ -57,7 +54,7 @@ dogpile.cache
 ~~~~~~~~~~~~~
 
 - Explicit key objects allow for type inference and encapsulation of keying
-- As yet there is no locking in pyappcache
+- dogpile.cache provides locking, pyappcache does not
 - Reduced temptation to use the problematic decorator pattern
   - This often causes import order problems as you need to have your cache at import time
-- SQLite backend instead of DBM/file backends
+- Pyappache doesn't provide DBM/file backends, SQLite instead
