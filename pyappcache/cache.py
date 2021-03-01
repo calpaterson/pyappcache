@@ -6,7 +6,7 @@ from .compression import GZIPCompressor
 from .serialisation import PickleSerialiser
 from .keys import Key, build_raw_key
 
-V_inv = TypeVar("V_inv")
+V = TypeVar("V")
 
 
 logger = getLogger(__name__)
@@ -28,7 +28,7 @@ class Cache(metaclass=ABCMeta):
         #: :class:`.serialisation.PickleSerialiser`
         self.serialiser = PickleSerialiser()
 
-    def get(self, key: Key[V_inv]) -> Optional[V_inv]:
+    def get(self, key: Key[V]) -> Optional[V]:
         """Look up the value stored under a :class:`~pyappcache.keys.Key` instance"""
         namespace_key = key.namespace_key()
         if namespace_key is not None:
@@ -44,7 +44,7 @@ class Cache(metaclass=ABCMeta):
         if cache_contents is not None:
             if self.compressor.is_compressed(cache_contents):
                 cache_contents = self.compressor.decompress(cache_contents)
-            return cast(V_inv, self.serialiser.loads(cache_contents))
+            return cast(V, self.serialiser.loads(cache_contents))
         else:
             return None
 
@@ -60,7 +60,7 @@ class Cache(metaclass=ABCMeta):
         else:
             return None
 
-    def get_via(self, key: Key[V_inv], getter: Callable[[], V_inv]) -> V_inv:
+    def get_via(self, key: Key[V], getter: Callable[[], V]) -> V:
         cache_contents = self.get(key)
         if cache_contents is None:
             new_cache_contents = getter()
@@ -77,7 +77,7 @@ class Cache(metaclass=ABCMeta):
         else:
             return None
 
-    def set(self, key: Key[V_inv], value: V_inv, ttl_seconds: int = 0) -> None:
+    def set(self, key: Key[V], value: V, ttl_seconds: int = 0) -> None:
         """Set a value by :class:`~pyappcache.keys.Key`"""
         namespace_key = key.namespace_key()  # FIXME: move this inside lookup_namespace
         if namespace_key is not None:
@@ -98,8 +98,8 @@ class Cache(metaclass=ABCMeta):
 
     def set_via(
         self,
-        key: Key[V_inv],
-        value: V_inv,
+        key: Key[V],
+        value: V,
         setter: Callable[..., Any],
         setter_args: Sequence = (),
         setter_kwargs: Optional[Mapping] = None,
@@ -110,7 +110,7 @@ class Cache(metaclass=ABCMeta):
         self.set(key, value)
 
     def set_by_str(
-        self, key_str: str, value: V_inv, ttl_seconds: int = 0, compress: bool = False
+        self, key_str: str, value: V, ttl_seconds: int = 0, compress: bool = False
     ) -> None:
         """Set a value by a :class:`str`."""
         as_pickle = self.serialiser.dumps(value)
@@ -122,7 +122,7 @@ class Cache(metaclass=ABCMeta):
             build_raw_key(self.prefix, key_str), as_bytes, ttl_seconds,
         )
 
-    def invalidate(self, key: Key[V_inv]) -> None:
+    def invalidate(self, key: Key[V]) -> None:
         """Invalidate by :class:`~pyappcache.keys.Key`.
 
         Depending on the particular implementation of invalidation this may or
