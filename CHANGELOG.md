@@ -3,8 +3,19 @@
 ## [Unreleased]
 
 ### Added
+### Changed
+### Removed
+
+## 0.9 - 2021-03-01
+
+### Added
+
+- Improved documentation greatly (and put it on RTD)
+- GPLv3 license
 
 ### Changed
+
+- Change the Key classes, a breaking change
 
 ### Removed
 
