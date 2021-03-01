@@ -61,7 +61,7 @@ def test_clear(cache, KeyCls):
 def test_unreadable_pickle(cache, KeyCls):
     key = KeyCls(random_string())
     key_segments = [cache.prefix]
-    key_segments.extend(key.as_segments())
+    key_segments.extend(key.cache_key_segments())
     key_bytes = "/".join(key_segments)
     cache.set_raw(key_bytes, b"good luck unpickling this", 0)
 

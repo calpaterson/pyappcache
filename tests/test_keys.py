@@ -4,7 +4,7 @@ from .utils import StringToIntKey
 
 def test_simple_key_to_segments():
     key = StringToIntKey("freddie")
-    assert key.as_segments() == ["freddie"]
+    assert key.cache_key_segments() == ["freddie"]
 
 
 def test_should_compress():

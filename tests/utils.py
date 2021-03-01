@@ -6,12 +6,12 @@ import socket
 from datetime import datetime, timedelta
 from logging import getLogger
 
-from pyappcache.keys import GenericStringKey
+from pyappcache.keys import SimpleStringKey
 
 logger = getLogger(__name__)
 
-StringToIntKey = GenericStringKey[int]
-StringToStringKey = GenericStringKey[str]
+StringToIntKey = SimpleStringKey[int]
+StringToStringKey = SimpleStringKey[str]
 
 
 class StringToStringKeyWithCompression(StringToStringKey):

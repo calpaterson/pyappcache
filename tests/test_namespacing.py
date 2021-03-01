@@ -1,25 +1,25 @@
 from datetime import datetime
 import logging
 
-from pyappcache.keys import GenericStringKey
+from pyappcache.keys import BaseKey
 
 
-class UserToLastChangedKey(GenericStringKey[datetime]):
+class UserToLastChangedKey(BaseKey[datetime]):
     def __init__(self, username: str):
         self._username = username
 
-    def as_segments(self):
+    def cache_key_segments(self):
         return [self._username, "last_changed"]
 
 
-class UserFavouritePokemon(GenericStringKey[str]):
+class UserFavouritePokemon(BaseKey[str]):
     def __init__(self, username: str):
         self._username = username
 
     def namespace_key(self):
         return UserToLastChangedKey(self._username)
 
-    def as_segments(self):
+    def cache_key_segments(self):
         return ["favourite_pokemon"]
 
 

@@ -23,7 +23,9 @@ class Cache(metaclass=ABCMeta):
         #: The compressor that will be used when a key asks for compression.
         #: Default is gzip via :class:`.compression.GZIPCompressor`
         self.compressor = GZIPCompressor()
-        #: The serialiers that will be used to turn Python objects back and forth into bytes
+        #: The serialiers that will be used to turn Python objects back and
+        #: forth into bytes.  The default serialiser is pickle, via
+        #: :class:`.serialisation.PickleSerialiser`
         self.serialiser = PickleSerialiser()
 
     def get(self, key: Key[V_inv]) -> Optional[V_inv]:
