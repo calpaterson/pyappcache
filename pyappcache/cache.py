@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 from logging import getLogger
 from typing import Optional, TypeVar, Any, cast, Callable, Sequence, Mapping
 
-from .compression import GZIPCompressor
-from .serialisation import PickleSerialiser
+from .compression import Compressor, GZIPCompressor
+from .serialisation import Serialiser, PickleSerialiser
 from .keys import Key, build_raw_key
 
 V = TypeVar("V")
@@ -22,11 +22,11 @@ class Cache(metaclass=ABCMeta):
         self.prefix = "pyappcache"
         #: The compressor that will be used when a key asks for compression.
         #: Default is gzip via :class:`.compression.GZIPCompressor`
-        self.compressor = GZIPCompressor()
+        self.compressor: Compressor = GZIPCompressor()
         #: The serialiers that will be used to turn Python objects back and
         #: forth into bytes.  The default serialiser is pickle, via
         #: :class:`.serialisation.PickleSerialiser`
-        self.serialiser = PickleSerialiser()
+        self.serialiser: Serialiser = PickleSerialiser()
 
     def get(self, key: Key[V]) -> Optional[V]:
         """Look up the value stored under a :class:`~pyappcache.keys.Key` instance"""

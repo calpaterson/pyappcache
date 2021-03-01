@@ -1,5 +1,24 @@
 import gzip
 
+from typing_extensions import Protocol
+
+
+class Compressor(Protocol):
+    """The protocol for compressors to follow"""
+
+    def is_compressed(self, data: bytes) -> bool:
+        """Takes some, possibly compressed data as an argument and returns True
+        if is has been compressed with this compressor, False otherwise."""
+        pass  # pragma: no cover
+
+    def compress(self, data: bytes) -> bytes:
+        """Compress the given bytes with this compressor"""
+        pass  # pragma: no cover
+
+    def decompress(self, data: bytes) -> bytes:
+        """Decompress the given bytes with this compressor"""
+        pass  # pragma: no cover
+
 
 class GZIPCompressor:
     """A default compressor that is gzip at level 5."""

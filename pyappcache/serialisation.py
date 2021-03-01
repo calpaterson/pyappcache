@@ -2,7 +2,22 @@ from typing import Any
 import pickle
 from logging import getLogger
 
+from typing_extensions import Protocol
+
 logger = getLogger(__name__)
+
+
+class Serialiser(Protocol):
+    """The protocol for serialisers to follow"""
+
+    def dumps(self, obj: Any) -> bytes:
+        """Dumps an arbitrary Python object to bytes"""
+        pass  # pragma: no cover
+
+    def loads(self, data: bytes) -> Any:
+        """Restores an arbitrary Python object from bytes, *or `None` if the
+        bytes don't make sense*."""
+        pass  # pragma: no cover
 
 
 class PickleSerialiser:
