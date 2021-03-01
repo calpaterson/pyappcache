@@ -62,7 +62,10 @@ class BaseKey(Key[V], metaclass=ABCMeta):
 
 
 class SimpleStringKey(Key[V]):
+    """A simple, string-based Key."""
+
     def __init__(self, key_str: str):
+        """Create a key based on a string"""
         self.key_str = key_str
 
     def namespace_key(self) -> Optional[Key[Any]]:

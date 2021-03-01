@@ -25,10 +25,13 @@ other's namespace.
 How to create your own key classes
 ----------------------------------
 
+Three different ways, from most straightforward to most complex.
+
 Option 1: Simple string keys
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you just want to use a string as your key, you can use :class:`~pyappcache.keys.SimpleStringKey`.
+If you just want to use a string as your key, you can use
+:class:`~pyappcache.keys.SimpleStringKey` directly.
 
 .. autoclass:: pyappcache.keys.SimpleStringKey
                :members: __init__
@@ -55,8 +58,20 @@ subclassing :class:`~pyappcache.keys.BaseKey`.
 This abstract base class is designed to make it quick as possible to create a
 new key class - just override `cache_key_segments` and you're ready to go.
 
-Option 3: Something more complicated
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code:: python
+
+    from pyappcache.keys import BaseKey
+    from some_orm_layer import BigORMObj
+
+    class BigORMObjKey(BaseKey):
+        def __init__(self, big_orm_obj):
+            self.big_orm_obj = big_orm_obj
+
+        def cache_key_segments(self):
+            return str(big_orm_obj.id)
+
+Option 3: Create your own Keys from scratch
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you want full flexibilty you need only define three special methods to allow
 any object to act as a `Key`.
