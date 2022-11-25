@@ -77,6 +77,9 @@ class SimpleStringKey(Key[V]):
     def cache_key_segments(self) -> Sequence[str]:
         return [self.key_str]
 
+    def __repr__(self) -> str:
+        return f"<SimpleStringKey '{self.key_str}'>"
+
 
 def build_raw_key(
     prefix: str, key: Union[Key, str], namespace: Optional[str] = None

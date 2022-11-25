@@ -4,6 +4,9 @@
 
 ### Added
 ### Changed
+
+- Added a better repr for `SimpleStringKey`
+
 ### Removed
 
 ## 0.9 - 2021-03-01
