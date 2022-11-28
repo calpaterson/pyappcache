@@ -6,21 +6,21 @@ README = open("README.rst").read()
 redis_requirements = ["redis>=3"]
 memcache_requirements = ["pylibmc"]
 test_requirements = [
-    "time-machine~=2.8.2",
+    "black~=22.10.0",
+    "cachecontrol<=0.12.6",  # see https://github.com/ionrock/cachecontrol/issues/262
+    "flask~=2.2.2",
+    "mypy==0.991",
+    "pyflakes",
+    "pytest-cov",
     "pytest~=7.2.0",
     "requests",
-    "cachecontrol",
-    "flask~=2.2.2",
-    "pytest-cov~=2.10.0",
-    "pyflakes~=2.2.0",
-    "sphinx==3.5.1",
-    "sphinx-autodoc-typehints~=1.11.1",
-    "wheel~=0.33.6",
-    "black~=22.10.0",
-    "mypy==0.991",
-    "types-redis",
+    "sphinx-autodoc-typehints~=1.19.5",
+    "sphinx==5.3.0",
+    "time-machine~=2.8.2",
     "types-python-dateutil",
+    "types-redis",
     "types-requests",
+    "wheel",
 ]
 
 setup(
