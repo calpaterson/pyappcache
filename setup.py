@@ -16,7 +16,7 @@ test_requirements = [
     "sphinx==3.5.1",
     "sphinx-autodoc-typehints~=1.11.1",
     "wheel~=0.33.6",
-    "black~=19.10b0",
+    "black~=22.10.0",
     "mypy==0.750",
 ]
 

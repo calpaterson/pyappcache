@@ -29,7 +29,7 @@ def random_bytes() -> bytes:
 
 ONE_MEG = 1024 * 1024 * 1024
 
-SLAB_REGEX = re.compile(br":(\d+):")
+SLAB_REGEX = re.compile(rb":(\d+):")
 
 
 def get_memcache_ttl(key: str) -> Optional[int]:
