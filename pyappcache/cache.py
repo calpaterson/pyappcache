@@ -119,7 +119,9 @@ class Cache(metaclass=ABCMeta):
         else:
             as_bytes = as_pickle
         self.set_raw(
-            build_raw_key(self.prefix, key_str), as_bytes, ttl_seconds,
+            build_raw_key(self.prefix, key_str),
+            as_bytes,
+            ttl_seconds,
         )
 
     def invalidate(self, key: Key[V]) -> None:

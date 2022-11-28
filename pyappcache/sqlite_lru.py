@@ -50,7 +50,8 @@ AND expiry <= ?;
 GET_DQL = """
 SELECT value
 FROM pyappcache
-WHERE key = ?;
+WHERE key = ?
+AND (expiry >= ? OR expiry = '-1');
 """
 
 GET_TTL_DQL = """
@@ -128,7 +129,7 @@ class SqliteCache(Cache):
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, raw_key, now))
-            cursor.execute(GET_DQL, (raw_key,))
+            cursor.execute(GET_DQL, (raw_key, now))
             rv = cursor.fetchone()
             self.conn.commit()
         if rv is not None:
@@ -139,7 +140,10 @@ class SqliteCache(Cache):
 
     def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()
-        expiry = last_read + timedelta(seconds=ttl)
+        if ttl != 0:
+            expiry = last_read + timedelta(seconds=ttl)
+        else:
+            expiry = "-1"
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(SET_DML, (key_bytes, value_bytes, expiry, last_read))
             cursor.execute(EVICT_DML, (self.max_size,))
