@@ -15,11 +15,11 @@ logger = getLogger(__name__)
 class Cache(metaclass=ABCMeta):
     """The standard, cross backend, interface to a cache."""
 
-    def __init__(self):
+    def __init__(self, prefix="pyappache"):
         #: A prefix that will be applied to cache keys to allow for multiple
         #: instances of this class to co-exist.  Exact use varies by particular
         #: cache.  Default is `'pyappcache'`.
-        self.prefix = "pyappcache"
+        self.prefix = prefix
         #: The compressor that will be used when a key asks for compression.
         #: Default is gzip via :class:`.compression.GZIPCompressor`
         self.compressor: Compressor = GZIPCompressor()
