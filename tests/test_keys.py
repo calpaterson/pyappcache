@@ -1,5 +1,5 @@
 from pyappcache.serialisation import PickleSerialiser
-from pyappcache.keys import SimpleStringKey
+from pyappcache.keys import SimpleStringKey, Key
 from .utils import StringToIntKey
 
 
@@ -16,5 +16,5 @@ def test_should_compress():
 
 
 def test_simple_string_key_repr():
-    key = SimpleStringKey("foo")
+    key: Key[str] = SimpleStringKey("foo")
     assert repr(key) == "<SimpleStringKey 'foo'>"

@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Optional, cast, Union
 from datetime import datetime, timedelta
 from contextlib import closing
 import sqlite3
@@ -140,6 +140,7 @@ class SqliteCache(Cache):
 
     def set_raw(self, key_bytes: str, value_bytes: bytes, ttl: int) -> None:
         last_read = datetime.utcnow()
+        expiry: Union[str, datetime]
         if ttl != 0:
             expiry = last_read + timedelta(seconds=ttl)
         else:

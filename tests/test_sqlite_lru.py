@@ -125,7 +125,7 @@ def test_sqlite3_eviction_via_last_read(random_conn):
 
     with time_machine.travel(datetime(2018, 1, 3, 3)):
         key_c = StringToStringKey("c")
-        cache.set(key_c, 3, ttl_seconds=36000)
+        cache.set(key_c, "3", ttl_seconds=36000)
 
         assert cache.get(key_b) is None
         assert cache.get(key_a) == "1"

@@ -17,7 +17,10 @@ test_requirements = [
     "sphinx-autodoc-typehints~=1.11.1",
     "wheel~=0.33.6",
     "black~=22.10.0",
-    "mypy==0.750",
+    "mypy==0.991",
+    "types-redis",
+    "types-python-dateutil",
+    "types-requests",
 ]
 
 setup(
