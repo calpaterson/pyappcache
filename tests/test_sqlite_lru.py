@@ -107,3 +107,25 @@ def test_sqlite3_eviction_without_ttls(random_conn):
 
         assert cache.get(key_a) is None
         assert cache.get(key_b) == "2"
+
+
+def test_sqlite3_eviction_via_last_read(random_conn):
+    cache = SqliteCache(max_size=2, connection=random_conn)
+
+    with time_machine.travel(datetime(2018, 1, 3, 0)):
+        key_a = StringToStringKey("a")
+        cache.set(key_a, "1", ttl_seconds=36000)
+
+    with time_machine.travel(datetime(2018, 1, 3, 1)):
+        key_b = StringToStringKey("b")
+        cache.set(key_b, "2", ttl_seconds=36000)
+
+    with time_machine.travel(datetime(2018, 1, 3, 2)):
+        cache.get(key_a)
+
+    with time_machine.travel(datetime(2018, 1, 3, 3)):
+        key_c = StringToStringKey("c")
+        cache.set(key_c, 3, ttl_seconds=36000)
+
+        assert cache.get(key_b) is None
+        assert cache.get(key_a) == "1"

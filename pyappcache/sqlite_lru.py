@@ -44,7 +44,7 @@ TOUCH_DML = """
 UPDATE pyappcache
 SET last_read = ?
 WHERE key = ?
-AND expiry <= ?;
+AND (expiry >= ? OR expiry = '-1');
 """
 
 GET_DQL = """
