@@ -6,10 +6,11 @@ README = open("README.rst").read()
 redis_requirements = ["redis>=3"]
 memcache_requirements = ["pylibmc"]
 test_requirements = [
-    "pytest~=5.3.1",
+    "time-machine~=2.8.2",
+    "pytest~=7.2.0",
     "requests",
     "cachecontrol",
-    "flask~=1.1.2",
+    "flask~=2.2.2",
     "pytest-cov~=2.10.0",
     "pyflakes~=2.2.0",
     "sphinx==3.5.1",
