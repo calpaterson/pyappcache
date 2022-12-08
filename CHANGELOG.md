@@ -1,13 +1,25 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+### Changed
+### Removed
+
+## 0.9.1
 
 ### Added
+
+- `prefix` can be passed as an arg to `Cache.__init__`
+- Support up to Python 3.11
+
 ### Changed
 
 - Added a better repr for `SimpleStringKey`
+- Fixed two issues in sqlite where expiry and eviction were not correct
 
 ### Removed
+
+- Support for Python 3.6
 
 ## 0.9 - 2021-03-01
 
