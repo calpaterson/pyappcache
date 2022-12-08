@@ -32,7 +32,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     zip_safe=True,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=["typing_extensions", "python-dateutil"],
     extras_require={
         "redis": redis_requirements,
