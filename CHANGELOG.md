@@ -3,6 +3,9 @@
 ## [Unreleased]
 ### Added
 ### Changed
+
+- Caches now work on buffers internally, rather than strs
+
 ### Removed
 
 ## 0.9.1

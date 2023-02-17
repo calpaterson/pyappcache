@@ -1,6 +1,7 @@
 import pylibmc
+import io
 
-from typing import Optional, Any
+from typing import Optional, Any, IO
 from logging import getLogger
 
 from .cache import Cache
@@ -26,21 +27,27 @@ class MemcacheCache(Cache):
         else:
             self._mc = pylibmc.Client(["127.0.0.1"], binary=True)
 
-    def get_raw(self, raw_key: str) -> Optional[Any]:
+    def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
         try:
-            return self._mc.get(raw_key)
+            value = self._mc.get(raw_key)
         except pylibmc.ConnectionError:
             logger.warning("got a connection error from pylibmc, retrying once")
-        return self._mc.get(raw_key)
+            value = self._mc.get(raw_key)
+        if value is not None:
+            return io.BytesIO(value)
+        else:
+            return None
 
-    def set_raw(self, raw_key: str, value_bytes: bytes, ttl: int) -> None:
+    def set_raw(self, raw_key: str, value_bytes: IO[bytes], ttl: int) -> None:
         # FIXME: check that keys don't include control characters or whitespace
         # Or add a note?
         try:
-            self._mc.set(raw_key, value_bytes, time=ttl)
+            self._mc.set(raw_key, value_bytes.read(), time=ttl)
+            return
         except pylibmc.ConnectionError:
             logger.warning("got a connection error from pylibmc, retrying once")
-        self._mc.set(raw_key, value_bytes, time=ttl)
+        value_bytes.seek(0)
+        self._mc.set(raw_key, value_bytes.read(), time=ttl)
 
     def invalidate_raw(self, raw_key: str) -> None:
         try:

@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from pyappcache.compression import GZIPCompressor
 
 import pytest
@@ -9,5 +11,8 @@ def compressor():
 
 
 def test_compress_and_decompress(compressor):
-    bytestr = b"hello, world"
-    assert compressor.decompress(compressor.compress(bytestr)) == bytestr
+    buf = BytesIO(b"hello, world")
+    decompressed = compressor.decompress(compressor.compress(buf)).read()
+    buf.seek(0)
+    expected = buf.read()
+    assert expected == decompressed

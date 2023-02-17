@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABCMeta
+from typing import IO
 
 from typing import TypeVar, Sequence, Union, Optional, Any
 from typing_extensions import Protocol
@@ -20,7 +21,7 @@ class Key(Protocol[V]):
         """
         pass  # pragma: no cover
 
-    def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
+    def should_compress(self, python_obj: V, as_bytes: IO[bytes]) -> bool:
         """This method passes the original Python object and the serialised
         `bytes` version of it in order to allow this method to decide whether
         compression should be used.
@@ -53,7 +54,7 @@ class BaseKey(Key[V], metaclass=ABCMeta):
     def namespace_key(self) -> Optional[Key[Any]]:
         return None
 
-    def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
+    def should_compress(self, python_obj: V, as_bytes: IO[bytes]) -> bool:
         return False
 
     @abstractmethod
@@ -71,7 +72,7 @@ class SimpleStringKey(Key[V]):
     def namespace_key(self) -> Optional[Key[Any]]:
         return None
 
-    def should_compress(self, python_obj: V, as_bytes: bytes) -> bool:
+    def should_compress(self, python_obj: V, as_bytes: IO[bytes]) -> bool:
         return False
 
     def cache_key_segments(self) -> Sequence[str]:

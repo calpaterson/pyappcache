@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import redis as redis_py
 import pylibmc
 
@@ -40,3 +42,6 @@ def cache(request, redis_client, memcache_client):
 @pytest.fixture(params=[StringToStringKey, StringToStringKeyWithCompression])
 def KeyCls(request):
     return request.param
+
+
+test_data = Path(__file__).parent.resolve() / "test-data"

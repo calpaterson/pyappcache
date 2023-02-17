@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from logging import getLogger
-from typing import Optional, TypeVar, Any, cast, Callable, Sequence, Mapping
+from typing import Optional, TypeVar, Any, cast, Callable, Sequence, Mapping, IO
 
 from .compression import Compressor, GZIPCompressor
 from .serialisation import Serialiser, PickleSerialiser
@@ -44,7 +44,7 @@ class Cache(metaclass=ABCMeta):
         if cache_contents is not None:
             if self.compressor.is_compressed(cache_contents):
                 cache_contents = self.compressor.decompress(cache_contents)
-            return cast(V, self.serialiser.loads(cache_contents))
+            return cast(V, self.serialiser.load(cache_contents))
         else:
             return None
 
@@ -56,7 +56,7 @@ class Cache(metaclass=ABCMeta):
         if cache_contents is not None:
             if self.compressor.is_compressed(cache_contents):
                 cache_contents = self.compressor.decompress(cache_contents)
-            return self.serialiser.loads(cache_contents)
+            return self.serialiser.load(cache_contents)
         else:
             return None
 
@@ -87,7 +87,7 @@ class Cache(metaclass=ABCMeta):
                 return None
         else:
             namespace = None
-        as_pickle = self.serialiser.dumps(value)
+        as_pickle = self.serialiser.dump(value)
         if key.should_compress(value, as_pickle):
             as_bytes = self.compressor.compress(as_pickle)
         else:
@@ -113,7 +113,7 @@ class Cache(metaclass=ABCMeta):
         self, key_str: str, value: V, ttl_seconds: int = 0, compress: bool = False
     ) -> None:
         """Set a value by a :class:`str`."""
-        as_pickle = self.serialiser.dumps(value)
+        as_pickle = self.serialiser.dump(value)
         if compress:
             as_bytes = self.compressor.compress(as_pickle)
         else:
@@ -143,7 +143,7 @@ class Cache(metaclass=ABCMeta):
         self.invalidate_raw(build_raw_key(self.prefix, key_str))
 
     @abstractmethod
-    def get_raw(self, key_str: str) -> Optional[bytes]:
+    def get_raw(self, key_str: str) -> Optional[IO[bytes]]:
         """Look up a value (as bytes) from a concrete key string.
 
         :param key_str: the (fully prefixed) key string to look up
@@ -152,7 +152,7 @@ class Cache(metaclass=ABCMeta):
         pass  # pragma: no cover
 
     @abstractmethod
-    def set_raw(self, key_str: str, value_bytes: bytes, ttl_seconds: int) -> None:
+    def set_raw(self, key_str: str, value_bytes: IO[bytes], ttl_seconds: int) -> None:
         """Set a value (as bytes) by a concrete key string.
 
         :param key_str: the (fully prefixed) key string to set.

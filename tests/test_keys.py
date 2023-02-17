@@ -11,7 +11,7 @@ def test_simple_key_to_segments():
 def test_should_compress():
     key = StringToIntKey("freddie")
     obj = 1
-    as_bytes = PickleSerialiser().dumps(obj)
+    as_bytes = PickleSerialiser().dump(obj)
     assert key.should_compress(obj, as_bytes) is False
 
 

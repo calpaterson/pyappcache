@@ -10,6 +10,9 @@ test_requirements = [
     "cachecontrol<=0.12.6",  # see https://github.com/ionrock/cachecontrol/issues/262
     "flask~=2.2.2",
     "mypy==0.991",
+    "pandas",
+    "pandas-stubs",
+    "pyarrow",
     "pyflakes",
     "pytest-cov",
     "pytest~=7.2.0",

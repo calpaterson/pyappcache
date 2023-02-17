@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite_lru import SqliteCache
@@ -63,7 +65,7 @@ def test_unreadable_pickle(cache, KeyCls):
     key_segments = [cache.prefix]
     key_segments.extend(key.cache_key_segments())
     key_bytes = "/".join(key_segments)
-    cache.set_raw(key_bytes, b"good luck unpickling this", 0)
+    cache.set_raw(key_bytes, BytesIO(b"good luck unpickling this"), 0)
 
     assert cache.get(key) is None
 
@@ -97,13 +99,13 @@ def test_compression_via_key(cache):
     key = StringToStringKeyWithCompression(random_string())
     cache.set(key, "b")
 
-    raw_value = cache.get_raw(build_raw_key(cache.prefix, key))
+    raw_value = cache.get_raw(build_raw_key(cache.prefix, key)).read()
     assert raw_value.startswith(b"\x1f\x8b")
 
 
 def test_compression_via_str(cache):
     cache.set_by_str("a", "b", compress=True)
-    raw_value = cache.get_raw(build_raw_key(cache.prefix, "a"))
+    raw_value = cache.get_raw(build_raw_key(cache.prefix, "a")).read()
     assert raw_value.startswith(b"\x1f\x8b")
 
 

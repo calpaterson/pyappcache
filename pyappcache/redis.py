@@ -1,4 +1,5 @@
-from typing import Optional, cast
+import io
+from typing import Optional, cast, IO
 from logging import getLogger
 
 import redis as redis_py
@@ -31,12 +32,16 @@ class RedisCache(Cache):
         else:
             self._redis = redis_py.Redis()
 
-    def get_raw(self, raw_key: str) -> Optional[bytes]:
-        return cast(Optional[bytes], self._redis.get(raw_key))
+    def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
+        value = self._redis.get(raw_key)
+        if value is not None:
+            return io.BytesIO(cast(bytes, value))
+        else:
+            return None
 
-    def set_raw(self, raw_key: str, value_bytes: bytes, ttl_seconds: int) -> None:
+    def set_raw(self, raw_key: str, value_bytes: IO[bytes], ttl_seconds: int) -> None:
         self._redis.set(
-            raw_key, value_bytes, ex=ttl_seconds if ttl_seconds != 0 else None
+            raw_key, value_bytes.read(), ex=ttl_seconds if ttl_seconds != 0 else None
         )
 
     def invalidate_raw(self, raw_key: str) -> None:
