@@ -1,4 +1,5 @@
 from typing import Optional, Union, IO
+import shutil
 import io
 from datetime import datetime, timedelta
 from contextlib import closing
@@ -50,6 +51,13 @@ AND (expiry >= ? OR expiry = '-1');
 
 GET_DQL = """
 SELECT value
+FROM pyappcache
+WHERE key = ?
+AND (expiry >= ? OR expiry = '-1');
+"""
+
+GET_DQL_FOR_BLOBOPEN = """
+SELECT rowid
 FROM pyappcache
 WHERE key = ?
 AND (expiry >= ? OR expiry = '-1');
@@ -128,16 +136,31 @@ class SqliteCache(Cache):
 
     def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
         now = datetime.utcnow()
+        has_blobopen = hasattr(self.conn, "blobopen")
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, raw_key, now))
-            cursor.execute(GET_DQL, (raw_key, now))
-            rv = cursor.fetchone()
-            self.conn.commit()
-        if rv is not None:
-            (cache_contents,) = rv
-            return io.BytesIO(cache_contents)
+            if has_blobopen:
+                cursor.execute(GET_DQL_FOR_BLOBOPEN, (raw_key, now))
+            else:
+                cursor.execute(GET_DQL, (raw_key, now))
+            v = cursor.fetchone()
+        if v is not None:
+            if has_blobopen:
+                rowid = v[0]
+                blob = self.conn.blobopen("pyappcache", "value", rowid, readonly=True)
+                # we need readline above in the stack, for pickle.
+                # frustratingly sqlite3.Blob does not have that and none of the
+                # wrappers in io seem able to polyfill it
+                rv = io.BytesIO()
+                shutil.copyfileobj(blob, rv)
+                rv.seek(0)
+            else:
+                (cache_contents,) = v
+                rv = io.BytesIO(cache_contents)
         else:
-            return None
+            rv = None
+        self.conn.commit()
+        return rv
 
     def set_raw(self, key_bytes: str, value_bytes: IO[bytes], ttl: int) -> None:
         last_read = datetime.utcnow()
