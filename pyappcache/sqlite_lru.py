@@ -32,6 +32,13 @@ VALUES
 (?, ?, ?, ?);
 """
 
+SET_DML_FOR_BLOBOPEN = """
+INSERT OR REPLACE INTO pyappcache
+(key, value, expiry, last_read)
+VALUES
+(?, zeroblob(?), ?, ?);
+"""
+
 EVICT_DML = """
 DELETE FROM pyappcache
 WHERE key IN (
@@ -127,6 +134,10 @@ class SqliteCache(Cache):
             self.conn = get_in_memory_conn()
         else:
             self.conn = connection
+
+        # the blobopen API is newish, 3.11+
+        self._has_blobopen = hasattr(self.conn, "blobopen")
+
         self.max_size = max_size
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(CREATE_DDL)
@@ -136,16 +147,15 @@ class SqliteCache(Cache):
 
     def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
         now = datetime.utcnow()
-        has_blobopen = hasattr(self.conn, "blobopen")
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, raw_key, now))
-            if has_blobopen:
+            if self._has_blobopen:
                 cursor.execute(GET_DQL_FOR_BLOBOPEN, (raw_key, now))
             else:
                 cursor.execute(GET_DQL, (raw_key, now))
             v = cursor.fetchone()
         if v is not None:
-            if has_blobopen:
+            if self._has_blobopen:
                 rowid = v[0]
                 blob = self.conn.blobopen("pyappcache", "value", rowid, readonly=True)
                 # we need readline above in the stack, for pickle.
@@ -170,8 +180,22 @@ class SqliteCache(Cache):
         else:
             expiry = "-1"
         with closing(self.conn.cursor()) as cursor:
-            cursor.execute(SET_DML, (key_bytes, value_bytes.read(), expiry, last_read))
+            if self._has_blobopen:
+                value_bytes.seek(0, io.SEEK_END)
+                value_length = value_bytes.tell()
+                value_bytes.seek(0)
+                cursor.execute(
+                    SET_DML_FOR_BLOBOPEN, (key_bytes, value_length, expiry, last_read)
+                )
+                rowid = cursor.lastrowid
+                with closing(self.conn.blobopen("pyappcache", "value", rowid)) as blob:
+                    shutil.copyfileobj(value_bytes, blob)
+            else:
+                cursor.execute(
+                    SET_DML, (key_bytes, value_bytes.read(), expiry, last_read)
+                )
             cursor.execute(EVICT_DML, (self.max_size,))
+
             self.conn.commit()
 
     def ttl(self, key_bytes: str) -> Optional[int]:
