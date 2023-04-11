@@ -2,9 +2,18 @@
 
 ## [Unreleased]
 ### Added
+
+- Added a new serialiser which uses Parquet instead of pickle for Pandas
+  dataframes: `DataFrameAwareSerialiser`.
+
 ### Changed
 
 - Caches now work on buffers internally, rather than strs
+  - This is a breaking change for compressors and serialisers
+  - This seems to work much better for larger values (eg dataframes, csv files,
+    etc)
+- SqliteCache will now use [incremental blob
+  I/O](https://www.sqlite.org/c3ref/blob.html) where possible (eg Python 3.11+)
 
 ### Removed
 
