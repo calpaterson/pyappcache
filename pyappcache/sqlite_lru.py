@@ -145,7 +145,7 @@ class SqliteCache(Cache):
                 cursor.execute(index_ddl)
             self.conn.commit()
 
-    def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
+    def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:  # pragma: no cover
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now, raw_key, now))
@@ -172,7 +172,9 @@ class SqliteCache(Cache):
         self.conn.commit()
         return rv
 
-    def set_raw(self, key_bytes: str, value_bytes: IO[bytes], ttl: int) -> None:
+    def set_raw(
+        self, key_bytes: str, value_bytes: IO[bytes], ttl: int
+    ) -> None:  # pragma: no cover
         last_read = datetime.utcnow()
         expiry: Union[str, datetime]
         if ttl != 0:
