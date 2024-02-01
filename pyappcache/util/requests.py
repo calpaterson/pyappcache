@@ -22,9 +22,9 @@ class CacheControlProxy:
         key = CacheControlKey(key_str)
         return self.cache.get(key)
 
-    def set(self, key_str: str, value: bytes) -> None:
+    def set(self, key_str: str, value: bytes, expires: Optional[int] = None) -> None:
         key = CacheControlKey(key_str)
-        self.cache.set(key, value)
+        self.cache.set(key, value, ttl_seconds=expires or 0)
 
     def delete(self, key_str: str) -> None:
         key = CacheControlKey(key_str)

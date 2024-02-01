@@ -75,7 +75,7 @@ def test_request_with_cache_control(cache, local_server):
     proxy = CacheControlProxy(cache)
 
     sesh = requests.Session()
-    cached_sesh = cachecontrol.CacheControl(sesh, cache=proxy)
+    cached_sesh = cachecontrol.CacheControl(sesh, cache=proxy)  # type: ignore
 
     response1 = cached_sesh.get(url)
     assert response1.status_code == 200
@@ -97,7 +97,7 @@ def test_deletion_with_cache_control(cache, local_server):
     proxy = CacheControlProxy(cache)
 
     sesh = requests.Session()
-    cached_sesh = cachecontrol.CacheControl(sesh, cache=proxy)
+    cached_sesh = cachecontrol.CacheControl(sesh, cache=proxy)  # type: ignore
 
     response1 = cached_sesh.get(url)
     assert response1.status_code == 200

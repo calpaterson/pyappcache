@@ -7,7 +7,7 @@ redis_requirements = ["redis>=3"]
 memcache_requirements = ["pylibmc"]
 test_requirements = [
     "black~=22.10.0",
-    "cachecontrol<=0.12.6",  # see https://github.com/ionrock/cachecontrol/issues/262
+    "cachecontrol",
     "flask~=2.2.2",
     "mypy==0.991",
     "pandas",
