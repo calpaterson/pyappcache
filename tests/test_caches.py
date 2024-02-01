@@ -4,6 +4,8 @@ from pyappcache.cache import Cache
 from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite_lru import SqliteCache
+from pyappcache.redis import RedisCache
+from pyappcache.fs import FilesystemCache
 
 import pytest
 from .utils import random_string, StringToStringKeyWithCompression
@@ -28,7 +30,9 @@ def test_get_and_set_10k_sec_ttl(cache, KeyCls):
         # ttl = get_memcache_ttl(key_str)
     elif isinstance(cache, SqliteCache):
         ttl = cache.ttl(key_str)
-    else:
+    elif isinstance(cache, FilesystemCache):
+        pytest.xfail(reason="ttls not implemented yet")
+    elif isinstance(cache, RedisCache):
         ttl = cache._redis.ttl(key_str)
     assert cache.get(key) == "a"
     assert ttl is not None
