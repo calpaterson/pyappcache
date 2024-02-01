@@ -15,7 +15,9 @@ logger = getLogger(__name__)
 class Cache(metaclass=ABCMeta):
     """The standard, cross backend, interface to a cache."""
 
-    def __init__(self, prefix="pyappache"):
+    DEFAULT_PREFIX = "pyappcache"
+
+    def __init__(self, prefix=DEFAULT_PREFIX):
         #: A prefix that will be applied to cache keys to allow for multiple
         #: instances of this class to co-exist.  Exact use varies by particular
         #: cache.  Default is `'pyappcache'`.
@@ -118,8 +120,9 @@ class Cache(metaclass=ABCMeta):
             as_bytes = self.compressor.compress(as_pickle)
         else:
             as_bytes = as_pickle
+        raw_key = build_raw_key(self.prefix, key_str)
         self.set_raw(
-            build_raw_key(self.prefix, key_str),
+            raw_key,
             as_bytes,
             ttl_seconds,
         )

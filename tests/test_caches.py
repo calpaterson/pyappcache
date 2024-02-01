@@ -1,5 +1,6 @@
 from io import BytesIO
 
+from pyappcache.cache import Cache
 from pyappcache.keys import build_raw_key
 from pyappcache.memcache import MemcacheCache
 from pyappcache.sqlite_lru import SqliteCache
@@ -153,3 +154,12 @@ def test_set_via_setter_fails(cache, KeyCls):
         cache.set_via(key, value, fake_setter, setter_args=("a", value))
 
     assert cache.get(key) is None
+
+
+def test_default_prefix(cache):
+    cache.prefix = Cache.DEFAULT_PREFIX
+    key = random_string()
+    value = random_string()
+    cache.set_by_str(key, value)
+
+    assert cache.get_raw("/".join(["pyappcache", key])) is not None
