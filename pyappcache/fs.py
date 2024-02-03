@@ -1,5 +1,4 @@
-import io
-from typing import Optional, cast, IO
+from typing import Optional, IO
 from logging import getLogger
 from pathlib import Path
 import shutil
