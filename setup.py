@@ -8,7 +8,7 @@ memcache_requirements = ["pylibmc"]
 test_requirements = [
     "black~=22.10.0",
     "cachecontrol",
-    "flask~=2.2.2",
+    "flask",
     "mypy==0.991",
     "pandas",
     "pandas-stubs",
@@ -19,7 +19,7 @@ test_requirements = [
     "requests",
     "sphinx-autodoc-typehints~=1.19.5",
     "sphinx==5.3.0",
-    "time-machine~=2.8.2",
+    "time-machine~=2.13.0",
     "types-python-dateutil",
     "types-redis",
     "types-requests",
