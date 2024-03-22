@@ -81,6 +81,7 @@ class FilesystemCache(Cache):
             expiry = "-1"
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(SET_DML, (raw_key, expiry, datetime.utcnow(), size))
+            self.metadata_conn.commit()
 
     def invalidate_raw(self, raw_key: str) -> None:
         path = self._make_path(raw_key)
