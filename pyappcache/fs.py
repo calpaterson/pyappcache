@@ -53,7 +53,6 @@ class FilesystemCache(Cache):
                 cursor.execute(index_ddl)
             self.metadata_conn.commit()
 
-
     def _make_path(self, raw_key: str) -> Path:
         path = self.directory / raw_key.replace("/", "_")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -90,12 +89,13 @@ class FilesystemCache(Cache):
     def clear_expired(self) -> None:
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(GET_EXPIRED_DQL)
-            for raw_key, in cursor.fetchall():
+            for (raw_key,) in cursor.fetchall():
                 self.invalidate_raw(raw_key)
                 cursor.execute(REMOVE_EXPIRED_DML, [raw_key])
 
     def clear(self) -> None:
         shutil.rmtree(self.directory)
+
 
 def _get_fh_size(fh: IO[bytes]) -> int:
     pos = fh.tell()

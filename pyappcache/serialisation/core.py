@@ -54,11 +54,15 @@ class BinaryFileSerialiser:
             s = obj.read(10)
             obj.seek(pos)
             if type(s) is not bytes:
-                raise RuntimeError("BinaryFileSerializer can only serialise binary files (got a string file)")
+                raise RuntimeError(
+                    "BinaryFileSerializer can only serialise binary files (got a string file)"
+                )
             else:
                 return obj
         except AttributeError:
-            raise RuntimeError(f"BinaryFileSerializer can only serialise files, but got a {type(obj)}")
+            raise RuntimeError(
+                f"BinaryFileSerializer can only serialise files, but got a {type(obj)}"
+            )
 
     def load(self, data: IO[bytes]) -> IO[bytes]:
         return data

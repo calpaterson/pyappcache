@@ -34,6 +34,7 @@ def test_dataframe_serialised__handles_normal_objects():
     loaded = serialiser.load(serialiser.dump(BytesIO(b"a"))).read()
     assert loaded == b"a"
 
+
 def test_binary_file_serialiser__works_on_files():
     serialiser = BinaryFileSerialiser()
     buf = BytesIO(b"hello")
