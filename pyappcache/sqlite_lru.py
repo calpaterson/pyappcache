@@ -201,6 +201,7 @@ class SqliteCache(Cache):
             self.conn.commit()
 
     def ttl(self, key_bytes: str) -> Optional[int]:
+        """Returns the (remaining) TTL of the given key."""
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(GET_TTL_DQL, (key_bytes,))
