@@ -46,7 +46,9 @@ class FilesystemCache(Cache):
         super().__init__()
         self.directory = directory
         self.directory.mkdir(parents=True, exist_ok=True)
-        self.metadata_conn = sqlite3.connect(str(self.directory / "metadata.sqlite"))
+        self.metadata_conn = sqlite3.connect(
+            str(self.directory / self.METADATA_DB_FILENAME)
+        )
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(CREATE_DDL)
             for index_ddl in INDEX_DDL:
