@@ -22,6 +22,13 @@ CREATE TABLE IF NOT EXISTS pyappcache (
 );
 """
 
+INDEX_DDL: List[str] = [
+    "CREATE INDEX IF NOT EXISTS idx_pyappcache_expiry ON pyappcache(expiry);",
+    "CREATE INDEX IF NOT EXISTS idx_pyappcache_last_read ON pyappcache(last_read);",
+    "CREATE INDEX IF NOT EXISTS idx_pyappcache_size ON pyappcache(size);",
+]
+
+
 GET_EXPIRED_DQL = """
 SELECT key FROM pyappcache where expiry < CURRENT_TIMESTAMP AND expiry != '-1';
 """
@@ -83,7 +90,9 @@ WHERE
 )
 """
 
-INDEX_DDL: List[str] = []
+CLEAR_DML = """
+UPDATE pyappcache SET expiry = ?;
+"""
 
 
 class FilesystemCache(Cache):
