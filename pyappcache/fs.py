@@ -29,14 +29,6 @@ INDEX_DDL: List[str] = [
 ]
 
 
-GET_EXPIRED_DQL = """
-SELECT key FROM pyappcache where expiry < CURRENT_TIMESTAMP AND expiry != '-1';
-"""
-
-REMOVE_EXPIRED_DML = """
-DELETE FROM pyappcache WHERE key = ?
-"""
-
 TOUCH_DML = """
 UPDATE pyappcache
 SET last_read = ?
@@ -122,7 +114,6 @@ class FilesystemCache(Cache):
 
     def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
         now = datetime.utcnow()
-        self._clear_expired()
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(TOUCH_DML, (now.isoformat(), raw_key, now.isoformat()))
             if cursor.rowcount == 0:
@@ -148,7 +139,6 @@ class FilesystemCache(Cache):
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(SET_DML, (raw_key, expiry, datetime.utcnow(), size))
             self.metadata_conn.commit()
-        self._clear_expired()
         self._evict()
 
     def invalidate_raw(self, raw_key: str) -> None:
@@ -169,14 +159,6 @@ class FilesystemCache(Cache):
             raw_key = row[0]
             path = self._make_path(raw_key)
             path.unlink(missing_ok=True)
-
-    def _clear_expired(self) -> None:
-        """Clear out expired data."""
-        with closing(self.metadata_conn.cursor()) as cursor:
-            cursor.execute(GET_EXPIRED_DQL)
-            for (raw_key,) in cursor.fetchall():
-                self.invalidate_raw(raw_key)
-                cursor.execute(REMOVE_EXPIRED_DML, [raw_key])
 
     def ttl(self, key_bytes: str) -> Optional[int]:
         """Returns the (remaining) TTL of the given key."""
