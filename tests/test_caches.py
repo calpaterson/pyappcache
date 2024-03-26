@@ -31,7 +31,7 @@ def test_get_and_set_10k_sec_ttl(cache, KeyCls):
     elif isinstance(cache, SqliteCache):
         ttl = cache.ttl(key_str)
     elif isinstance(cache, FilesystemCache):
-        pytest.xfail(reason="ttls not implemented yet")
+        ttl = cache.ttl(key_str)
     elif isinstance(cache, RedisCache):
         ttl = cache._redis.ttl(key_str)
     assert cache.get(key) == "a"

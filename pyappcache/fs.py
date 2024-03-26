@@ -7,6 +7,8 @@ import shutil
 from contextlib import closing
 from datetime import datetime, timedelta
 
+from dateutil.parser import parse as parse_dt
+
 from .cache import Cache
 
 logger = getLogger(__name__)
@@ -33,6 +35,12 @@ INSERT OR REPLACE INTO pyappcache
 (key, expiry, last_read, size)
 VALUES
 (?, ?, ?, ?);
+"""
+
+GET_TTL_DQL = """
+SELECT expiry
+FROM pyappcache
+WHERE key = ?;
 """
 
 INDEX_DDL: List[str] = []
@@ -94,6 +102,20 @@ class FilesystemCache(Cache):
             for (raw_key,) in cursor.fetchall():
                 self.invalidate_raw(raw_key)
                 cursor.execute(REMOVE_EXPIRED_DML, [raw_key])
+
+    def ttl(self, key_bytes: str) -> Optional[int]:
+        """Returns the (remaining) TTL of the given key."""
+        now = datetime.utcnow()
+        with closing(self.metadata_conn.cursor()) as cursor:
+            cursor.execute(GET_TTL_DQL, (key_bytes,))
+            row = cursor.fetchone()
+        if row is not None:
+            expiry = row[0]
+            expiry_dt = parse_dt(expiry)
+            ttl_td = expiry_dt - now
+            return int(ttl_td.total_seconds())
+        else:
+            return None
 
     def clear(self) -> None:
         shutil.rmtree(self.directory)
