@@ -19,6 +19,13 @@ def test_get_and_set_no_ttl(cache, KeyCls):
     assert got == v
 
 
+def test_ttl_when_key_not_set(cache):
+    if not hasattr(cache, "ttl"):
+        pytest.skip("ttl is not implemented")
+    key = random_string().encode("utf-8")
+    assert cache.ttl(key) is None
+
+
 def test_get_and_set_10k_sec_ttl(cache, KeyCls):
     key = KeyCls(random_string())
     cache.set(key, "a", ttl_seconds=10_000)

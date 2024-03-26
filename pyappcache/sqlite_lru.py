@@ -205,10 +205,14 @@ class SqliteCache(Cache):
         now = datetime.utcnow()
         with closing(self.conn.cursor()) as cursor:
             cursor.execute(GET_TTL_DQL, (key_bytes,))
-            (expiry,) = cursor.fetchone()
-        expiry_dt = parse_dt(expiry)
-        ttl_td = expiry_dt - now
-        return int(ttl_td.total_seconds())
+            row = cursor.fetchone()
+        if row is not None:
+            expiry = row[0]
+            expiry_dt = parse_dt(expiry)
+            ttl_td = expiry_dt - now
+            return int(ttl_td.total_seconds())
+        else:
+            return None
 
     def invalidate_raw(self, raw_key: str) -> None:
         with closing(self.conn.cursor()) as cursor:
