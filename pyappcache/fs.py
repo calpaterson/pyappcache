@@ -69,7 +69,7 @@ class FilesystemCache(Cache):
         return path
 
     def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
-        self.clear_expired()
+        self._clear_expired()
         path = self._make_path(raw_key)
         try:
             return path.open("rb")
@@ -96,7 +96,7 @@ class FilesystemCache(Cache):
         path = self._make_path(raw_key)
         path.unlink(missing_ok=True)
 
-    def clear_expired(self) -> None:
+    def _clear_expired(self) -> None:
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(GET_EXPIRED_DQL)
             for (raw_key,) in cursor.fetchall():
