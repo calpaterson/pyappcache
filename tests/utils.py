@@ -19,12 +19,12 @@ class StringToStringKeyWithCompression(StringToStringKey):
         return True
 
 
-def random_string() -> str:
-    return "".join(random.choice(string.ascii_lowercase) for _ in range(32))
+def random_string(n: int = 32) -> str:
+    return "".join(random.choice(string.ascii_lowercase) for _ in range(n))
 
 
-def random_bytes() -> bytes:
-    return bytes(random_string(), "utf-8")
+def random_bytes(n) -> bytes:
+    return bytes(random_string(n), "utf-8")
 
 
 ONE_MEG = 1024 * 1024 * 1024

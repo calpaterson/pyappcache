@@ -43,17 +43,53 @@ FROM pyappcache
 WHERE key = ?;
 """
 
+# The below SQL should be done in one step using the RETURNING clause of the
+# DELETE statement, but RETURNING was only added to sqlite in 3.35.0
+# (2021-03-12) and not everyone has it yet (including me)
+
+GET_EVICTION_COHORT_DQL = """
+SELECT
+    KEY
+FROM (
+    SELECT
+        KEY,
+        last_read,
+        SUM(size) OVER (ORDER BY last_read DESC) AS total_size
+    FROM pyappcache) AS t
+WHERE
+    total_size > ?;
+"""
+
+EVICT_COHORT_DML = """
+DELETE FROM pyappcache
+WHERE KEY IN (
+SELECT
+    KEY
+FROM (
+    SELECT
+        KEY,
+        last_read,
+        SUM(size) OVER (ORDER BY last_read DESC) AS total_size
+    FROM pyappcache) AS t
+WHERE
+    total_size > ?
+)
+"""
+
 INDEX_DDL: List[str] = []
 
-# FIXME: respect ttls
-# FIXME: allow setting a max cache size
+
 class FilesystemCache(Cache):
     METADATA_DB_FILENAME = "metadata.sqlite3"
 
-    def __init__(self, directory: Path):
+    # 100mb default limit
+    DEFAULT_MAX_SIZE = 1000 * 1000 * 100
+
+    def __init__(self, directory: Path, max_size_bytes: int=DEFAULT_MAX_SIZE):
         super().__init__()
         self.directory = directory
         self.directory.mkdir(parents=True, exist_ok=True)
+        self.max_size_bytes = max_size_bytes
         self.metadata_conn = sqlite3.connect(
             str(self.directory / self.METADATA_DB_FILENAME)
         )
@@ -91,12 +127,30 @@ class FilesystemCache(Cache):
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(SET_DML, (raw_key, expiry, datetime.utcnow(), size))
             self.metadata_conn.commit()
+        self._clear_expired()
+        self._evict()
 
     def invalidate_raw(self, raw_key: str) -> None:
+        # FIXME: this should be updating the metadata
         path = self._make_path(raw_key)
         path.unlink(missing_ok=True)
 
+    def _evict(self) -> None:
+        """Evict data to maintain the maximum size."""
+        with closing(self.metadata_conn.cursor()) as cursor:
+            cursor.execute("BEGIN;")
+            cursor.execute(GET_EVICTION_COHORT_DQL, (self.max_size_bytes,))
+            rs = cursor.fetchall()
+            cursor.execute(EVICT_COHORT_DML, (self.max_size_bytes,))
+            self.metadata_conn.commit()
+
+        for row in rs:
+            raw_key = row[0]
+            path = self._make_path(raw_key)
+            path.unlink(missing_ok=True)
+
     def _clear_expired(self) -> None:
+        """Clear out expired data."""
         with closing(self.metadata_conn.cursor()) as cursor:
             cursor.execute(GET_EXPIRED_DQL)
             for (raw_key,) in cursor.fetchall():
@@ -122,6 +176,7 @@ class FilesystemCache(Cache):
 
 
 def _get_fh_size(fh: IO[bytes]) -> int:
+    """Return the size of a seekable binary filehandle."""
     pos = fh.tell()
     fh.seek(0, os.SEEK_END)
     size = fh.tell()

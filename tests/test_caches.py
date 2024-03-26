@@ -8,7 +8,7 @@ from pyappcache.redis import RedisCache
 from pyappcache.fs import FilesystemCache
 
 import pytest
-from .utils import random_string, StringToStringKeyWithCompression
+from .utils import random_string, StringToStringKeyWithCompression, random_bytes
 
 
 def test_get_and_set_no_ttl(cache, KeyCls):
@@ -174,3 +174,23 @@ def test_default_prefix(cache):
     cache.set_by_str(key, value)
 
     assert cache.get_raw("/".join(["pyappcache", key])) is not None
+
+
+def test_eviction__max_size_is_maintained(cache):
+    """Test that eviction happens on set_raw."""
+    if not hasattr(cache, "max_size_bytes"):
+        pytest.skip(reason="cache doesn't have a max_size_bytes param")
+
+    cache.max_size_bytes = 100
+
+    a_val = random_bytes(49)
+    b_val = random_bytes(49)
+    c_val = random_bytes(49)
+
+    cache.set_raw("a", BytesIO(a_val), 100)
+    cache.set_raw("b", BytesIO(b_val), 100)
+    cache.set_raw("c", BytesIO(c_val), 100)
+
+    assert cache.get_raw("a") is None
+    assert cache.get_raw("b").read() == b_val
+    assert cache.get_raw("c").read() == c_val
