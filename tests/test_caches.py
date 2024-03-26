@@ -194,3 +194,23 @@ def test_eviction__max_size_is_maintained(cache):
     assert cache.get_raw("a") is None
     assert cache.get_raw("b").read() == b_val
     assert cache.get_raw("c").read() == c_val
+
+
+def test_eviction__reading_is_a_touch(cache):
+    if not hasattr(cache, "max_size_bytes"):
+        pytest.skip(reason="cache doesn't have a max_size_bytes param")
+
+    cache.max_size_bytes = 100
+
+    a_val = random_bytes(49)
+    b_val = random_bytes(49)
+    c_val = random_bytes(49)
+
+    cache.set_raw("a", BytesIO(a_val), 100)
+    cache.set_raw("b", BytesIO(b_val), 100)
+    cache.get_raw("a")
+    cache.set_raw("c", BytesIO(c_val), 100)
+
+    assert cache.get_raw("a").read() == a_val
+    assert cache.get_raw("b") is None
+    assert cache.get_raw("c").read() == c_val

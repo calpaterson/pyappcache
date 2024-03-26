@@ -30,6 +30,13 @@ REMOVE_EXPIRED_DML = """
 DELETE FROM pyappcache WHERE key = ?
 """
 
+TOUCH_DML = """
+UPDATE pyappcache
+SET last_read = ?
+WHERE key = ?
+AND (expiry >= ? OR expiry = '-1');
+"""
+
 SET_DML = """
 INSERT OR REPLACE INTO pyappcache
 (key, expiry, last_read, size)
@@ -85,7 +92,7 @@ class FilesystemCache(Cache):
     # 100mb default limit
     DEFAULT_MAX_SIZE = 1000 * 1000 * 100
 
-    def __init__(self, directory: Path, max_size_bytes: int=DEFAULT_MAX_SIZE):
+    def __init__(self, directory: Path, max_size_bytes: int = DEFAULT_MAX_SIZE):
         super().__init__()
         self.directory = directory
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -105,15 +112,20 @@ class FilesystemCache(Cache):
         return path
 
     def get_raw(self, raw_key: str) -> Optional[IO[bytes]]:
+        now = datetime.utcnow()
         self._clear_expired()
+        with closing(self.metadata_conn.cursor()) as cursor:
+            cursor.execute(TOUCH_DML, (now.isoformat(), raw_key, now.isoformat()))
+            if cursor.rowcount == 0:
+                return None
+            self.metadata_conn.commit()
+
         path = self._make_path(raw_key)
         try:
             return path.open("rb")
         except FileNotFoundError:
+            # FIXME: should handle this by expiring the key
             return None
-        else:
-            # FIXME: should touch here
-            pass
 
     def set_raw(self, raw_key: str, value_bytes: IO[bytes], ttl_seconds: int) -> None:
         path = self._make_path(raw_key)
@@ -172,7 +184,11 @@ class FilesystemCache(Cache):
             return None
 
     def clear(self) -> None:
-        shutil.rmtree(self.directory)
+        now = datetime.utcnow()
+        past = now - timedelta(seconds=1)
+        with closing(self.metadata_conn.cursor()) as cursor:
+            cursor.execute(CLEAR_DML, (past.isoformat(),))
+            self.metadata_conn.commit()
 
 
 def _get_fh_size(fh: IO[bytes]) -> int:
