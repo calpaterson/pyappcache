@@ -1,10 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## 0.10.0
 ### Added
 
+- A new FilesystemCache
 - Added a new serialiser which uses Parquet instead of pickle for Pandas
-  dataframes: `DataFrameAwareSerialiser`.
+  dataframes: `pyappcache.serialisation.pandas.DataFrameAwareSerialiser`.
+- Support for Python 3.12
+- A new `BinaryFileSerialiser`
 
 ### Changed
 
@@ -14,10 +17,14 @@
     etc)
 - SqliteCache will now use [incremental blob
   I/O](https://www.sqlite.org/c3ref/blob.html) where possible (eg Python 3.11+)
+- Fixed an issue with the default prefix being "pyappache"
+- Sort out CacheControlProxy
 
 ### Removed
 
-## 0.9.1
+- Support for Python 3.7
+
+## 0.9.1 - 2022-12-08
 
 ### Added
 
